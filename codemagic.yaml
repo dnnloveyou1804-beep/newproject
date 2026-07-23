@@ -6,6 +6,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: ad_hoc
+        bundle_identifier: com.example.dntweaks
       xcode: latest
       cocoapods: default
     scripts:
