@@ -24,13 +24,17 @@ workflows:
 
           mkdir -p "$OUTPUT_DIR"
 
-          # 1. Build Archive
+          # 1. Build Archive (Ép tắt Automatic Signing và inject Team ID)
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
             -archivePath "$ARCHIVE_PATH" \
             -sdk iphoneos \
-            -configuration Release
+            -configuration Release \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="iPhone Distribution" \
+            DEVELOPMENT_TEAM="$NETRC_TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="$CM_PROVISIONING_PROFILE_NAME"
 
           # 2. Tạo exportOptions.plist
           cat <<EOF > "$EXPORT_OPTIONS"
