@@ -15,30 +15,13 @@ workflows:
       - name: Set up Code Signing
         script: |
           xcode-project use-profiles
-          
-          # Tìm file .mobileprovision của profile DN để lấy UUID chuẩn
-          PROFILE_PATH=$(find ~/Library/MobileDevice/Provisioning\ Profiles -name "*.mobileprovision" | head -n 1)
-          PROFILE_UUID=$(security cms -D -i "$PROFILE_PATH" | grep -A1 "UUID" | string -tag string | sed 's/<[^>]*>//g' | xargs)
-          
-          echo "Profile UUID found: $PROFILE_UUID"
-          echo "PROFILE_UUID=$PROFILE_UUID" >> $CM_ENV
 
-      - name: Build IPA via xcodebuild
+      - name: Build IPA via Codemagic CLI
         script: |
-          xcodebuild archive \
-            -project "DNTWEAKS.xcodeproj" \
-            -scheme "DNTWEAKS" \
-            -archivePath "build/ios/xcarchive/DNTWEAKS.xcarchive" \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE="$PROFILE_UUID" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_UUID" \
-            AD_HOC_CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO
-
-          xcode-project package-app \
-            --archive "build/ios/xcarchive/DNTWEAKS.xcarchive" \
-            --export-package-path "build/ios/ipa/DNTWEAKS.ipa"
+          xcode-project build-ipa \
+            --project "DNTWEAKS.xcodeproj" \
+            --scheme "DNTWEAKS" \
+            --archive-flags="CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY='iPhone Distribution' PROVISIONING_PROFILE_SPECIFIER='DN'"
 
     artifacts:
       - build/ios/ipa/*.ipa
