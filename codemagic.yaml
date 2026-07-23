@@ -6,32 +6,55 @@ workflows:
     environment:
       xcode: latest
       cocoapods: default
+      ios_signing:
+        distribution_profiles:
+          - DNTWEAKS_PROFILE  # Thay bằng Reference Name của Provisioning Profile trên Codemagic
+        bundle_identifier: com.yourcompany.dntweaks # Thay bằng Bundle Identifier chính xác của dự án
     scripts:
-      - name: Build iOS App & Export Unsigned IPA
+      - name: Initialize Keychain and Install Profiles
         script: |
-          # 1. Định nghĩa thư mục
+          # Khởi tạo keychain và cài đặt profile/cert từ Codemagic vào máy build
+          keychain initialize
+          xcode-project install-profiles
+
+      - name: Build iOS App & Export IPA
+        script: |
+          # 1. Định nghĩa các đường dẫn
           ARCHIVE_PATH="$HOME/build/DNTWEAKS.xcarchive"
           OUTPUT_DIR="$HOME/build/output"
-          PAYLOAD_DIR="$HOME/build/Payload"
+          EXPORT_OPTIONS="$HOME/build/exportOptions.plist"
 
           mkdir -p "$OUTPUT_DIR"
-          mkdir -p "$PAYLOAD_DIR"
 
-          # 2. Build Archive (Không ký số)
+          # 2. Build file Archive (.xcarchive)
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
             -archivePath "$ARCHIVE_PATH" \
             -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            -configuration Release
 
-          # 3. Copy file .app vào thư mục Payload và nén thành .ipa
-          cp -R "$ARCHIVE_PATH/Products/Applications/"*.app "$PAYLOAD_DIR/"
-          cd $HOME/build
-          zip -qr "$OUTPUT_DIR/DNTWEAKS.ipa" Payload
+          # 3. Tạo file exportOptions.plist cấu hình xuất IPA
+          cat <<EOF > "$EXPORT_OPTIONS"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>ad-hoc</string>
+              <key>signingStyle</key>
+              <string>manual</string>
+              <key>compileBitcode</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
+
+          # 4. ExportArchive để tạo file .ipa đã được ký số
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist "$EXPORT_OPTIONS" \
+            -exportPath "$OUTPUT_DIR"
 
     artifacts:
       - $HOME/build/output/*.ipa
