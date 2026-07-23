@@ -7,9 +7,10 @@ workflows:
       xcode: latest
       cocoapods: default
       ios_signing:
+        distribution_type: ad_hoc  # Bổ sung dòng bắt buộc này (ad_hoc / development / app_store)
+        bundle_identifier: com.yourcompany.dntweaks  # Thay bằng Bundle ID thật của dự án
         distribution_profiles:
-          - DN  # Tên Certificate/Profile của bạn từ màn hình Settings
-        bundle_identifier: com.yourcompany.dntweaks # Thay bằng Bundle ID thực tế của dự án Xcode
+          - DN
     scripts:
       - name: Initialize Keychain & Install Profiles
         script: |
@@ -24,7 +25,6 @@ workflows:
 
           mkdir -p "$OUTPUT_DIR"
 
-          # 1. Build Archive
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
@@ -32,7 +32,6 @@ workflows:
             -sdk iphoneos \
             -configuration Release
 
-          # 2. Tạo exportOptions.plist (sử dụng method ad-hoc hoặc app-store tuỳ mục đích)
           cat <<EOF > "$EXPORT_OPTIONS"
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -48,7 +47,6 @@ workflows:
           </plist>
           EOF
 
-          # 3. Export IPA
           xcodebuild -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
             -exportOptionsPlist "$EXPORT_OPTIONS" \
