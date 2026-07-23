@@ -7,9 +7,9 @@ workflows:
       xcode: latest
       cocoapods: default
       ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.yourcompany.dntweaks
         provisioning_profiles:
+          - DN
+        certificates:
           - DN
     scripts:
       - name: Initialize Keychain & Install Profiles
@@ -25,6 +25,7 @@ workflows:
 
           mkdir -p "$OUTPUT_DIR"
 
+          # 1. Build Archive
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
@@ -32,6 +33,7 @@ workflows:
             -sdk iphoneos \
             -configuration Release
 
+          # 2. Tạo exportOptions.plist
           cat <<EOF > "$EXPORT_OPTIONS"
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -47,6 +49,7 @@ workflows:
           </plist>
           EOF
 
+          # 3. Export IPA
           xcodebuild -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
             -exportOptionsPlist "$EXPORT_OPTIONS" \
