@@ -12,11 +12,6 @@ workflows:
         certificates:
           - DN
     scripts:
-      - name: Initialize Keychain & Install Profiles
-        script: |
-          keychain initialize
-          xcode-project install-profiles
-
       - name: Build iOS App & Export Signed IPA
         script: |
           ARCHIVE_PATH="$HOME/build/DNTWEAKS.xcarchive"
