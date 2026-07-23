@@ -16,47 +16,11 @@ workflows:
         script: |
           xcode-project use-profiles
 
-      - name: Build iOS App & Export Signed IPA
+      - name: Build IPA via Codemagic CLI
         script: |
-          ARCHIVE_PATH="$HOME/build/DNTWEAKS.xcarchive"
-          OUTPUT_DIR="$HOME/build/output"
-          EXPORT_OPTIONS="$HOME/build/exportOptions.plist"
-
-          mkdir -p "$OUTPUT_DIR"
-
-          # 1. Build Archive (Ép tắt Automatic Signing và inject Team ID)
-          xcodebuild archive \
-            -project "DNTWEAKS.xcodeproj" \
-            -scheme "DNTWEAKS" \
-            -archivePath "$ARCHIVE_PATH" \
-            -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            DEVELOPMENT_TEAM="$NETRC_TEAM_ID" \
-            PROVISIONING_PROFILE_SPECIFIER="$CM_PROVISIONING_PROFILE_NAME"
-
-          # 2. Tạo exportOptions.plist
-          cat <<EOF > "$EXPORT_OPTIONS"
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>ad-hoc</string>
-              <key>signingStyle</key>
-              <string>manual</string>
-              <key>compileBitcode</key>
-              <false/>
-          </dict>
-          </plist>
-          EOF
-
-          # 3. Export IPA
-          xcodebuild -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
-            -exportOptionsPlist "$EXPORT_OPTIONS" \
-            -exportPath "$OUTPUT_DIR"
+          xcode-project build-ipa \
+            --project "DNTWEAKS.xcodeproj" \
+            --scheme "DNTWEAKS"
 
     artifacts:
-      - $HOME/build/output/*.ipa
+      - build/ios/ipa/*.ipa
