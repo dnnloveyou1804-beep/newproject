@@ -4,9 +4,6 @@ workflows:
     max_build_duration: 60
     instance_type: mac_mini_m1
     environment:
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.example.dntweaks
       xcode: latest
       cocoapods: default
     scripts:
@@ -17,6 +14,7 @@ workflows:
             -scheme "DNTWEAKS" \
             -archivePath "$HOME/build/DNTWEAKS.xcarchive" \
             -sdk iphoneos \
-            -configuration Release
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO
     artifacts:
       - $HOME/build/DNTWEAKS.xcarchive
