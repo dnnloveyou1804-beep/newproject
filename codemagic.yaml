@@ -7,44 +7,31 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Build iOS App & Export IPA
+      - name: Build iOS App & Export Unsigned IPA
         script: |
-          # 1. Tạo thư mục chứa output nếu chưa có
-          mkdir -p $HOME/build/output
+          # 1. Định nghĩa thư mục
+          ARCHIVE_PATH="$HOME/build/DNTWEAKS.xcarchive"
+          OUTPUT_DIR="$HOME/build/output"
+          PAYLOAD_DIR="$HOME/build/Payload"
 
-          # 2. Build file Archive (.xcarchive)
+          mkdir -p "$OUTPUT_DIR"
+          mkdir -p "$PAYLOAD_DIR"
+
+          # 2. Build Archive (Không ký số)
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
-            -archivePath "$HOME/build/DNTWEAKS.xcarchive" \
+            -archivePath "$ARCHIVE_PATH" \
             -sdk iphoneos \
             -configuration Release \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-          # 3. Tạo file exportOptions.plist tạm thời
-          cat <<EOF > $HOME/build/exportOptions.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>method</key>
-              <string>ad-hoc</string>
-              <key>compileBitcode</key>
-              <false/>
-          </dict>
-          </plist>
-          EOF
-
-          # 4. Export từ .xcarchive ra .ipa (Unsigned / Ad-hoc)
-          xcodebuild -exportArchive \
-            -archivePath "$HOME/build/DNTWEAKS.xcarchive" \
-            -exportOptionsPlist "$HOME/build/exportOptions.plist" \
-            -exportPath "$HOME/build/output" \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+          # 3. Copy file .app vào thư mục Payload và nén thành .ipa
+          cp -R "$ARCHIVE_PATH/Products/Applications/"*.app "$PAYLOAD_DIR/"
+          cd $HOME/build
+          zip -qr "$OUTPUT_DIR/DNTWEAKS.ipa" Payload
 
     artifacts:
       - $HOME/build/output/*.ipa
