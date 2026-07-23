@@ -7,14 +7,44 @@ workflows:
       xcode: latest
       cocoapods: default
     scripts:
-      - name: Build iOS App
+      - name: Build iOS App & Export IPA
         script: |
+          # 1. Tạo thư mục chứa output nếu chưa có
+          mkdir -p $HOME/build/output
+
+          # 2. Build file Archive (.xcarchive)
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
             -archivePath "$HOME/build/DNTWEAKS.xcarchive" \
             -sdk iphoneos \
             -configuration Release \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
+
+          # 3. Tạo file exportOptions.plist tạm thời
+          cat <<EOF > $HOME/build/exportOptions.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>method</key>
+              <string>ad-hoc</string>
+              <key>compileBitcode</key>
+              <false/>
+          </dict>
+          </plist>
+          EOF
+
+          # 4. Export từ .xcarchive ra .ipa (Unsigned / Ad-hoc)
+          xcodebuild -exportArchive \
+            -archivePath "$HOME/build/DNTWEAKS.xcarchive" \
+            -exportOptionsPlist "$HOME/build/exportOptions.plist" \
+            -exportPath "$HOME/build/output" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
     artifacts:
-      - $HOME/build/DNTWEAKS.xcarchive
+      - $HOME/build/output/*.ipa
