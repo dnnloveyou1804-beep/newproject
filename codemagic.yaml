@@ -14,14 +14,13 @@ workflows:
     scripts:
       - name: Set up Code Signing Profiles
         script: |
-          xcode-project use-profiles --profile DN
+          xcode-project use-profiles
 
       - name: Build IPA via Codemagic CLI
         script: |
           xcode-project build-ipa \
             --project "DNTWEAKS.xcodeproj" \
-            --scheme "DNTWEAKS" \
-            --archive-flags="CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY='iPhone Distribution' PROVISIONING_PROFILE_SPECIFIER='DN'"
+            --scheme "DNTWEAKS"
 
     artifacts:
       - build/ios/ipa/*.ipa
