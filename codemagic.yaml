@@ -12,6 +12,10 @@ workflows:
         certificates:
           - DN
     scripts:
+      - name: Set up Code Signing Profiles
+        script: |
+          xcode-project use-profiles
+
       - name: Build iOS App & Export Signed IPA
         script: |
           ARCHIVE_PATH="$HOME/build/DNTWEAKS.xcarchive"
@@ -20,16 +24,13 @@ workflows:
 
           mkdir -p "$OUTPUT_DIR"
 
-          # 1. Build Archive ép dùng Manual Signing từ Codemagic
+          # 1. Build Archive
           xcodebuild archive \
             -project "DNTWEAKS.xcodeproj" \
             -scheme "DNTWEAKS" \
             -archivePath "$ARCHIVE_PATH" \
             -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="iPhone Distribution" \
-            PROVISIONING_PROFILE_SPECIFIER="$CM_PROVISIONING_PROFILE_NAME"
+            -configuration Release
 
           # 2. Tạo exportOptions.plist
           cat <<EOF > "$EXPORT_OPTIONS"
