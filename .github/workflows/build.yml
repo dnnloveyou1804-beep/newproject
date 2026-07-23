@@ -1,0 +1,44 @@
+name: Build iOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Xcode Version
+        run: xcodebuild -version
+
+      - name: Show files
+        run: ls -R
+
+      - name: List schemes
+        run: |
+          xcodebuild \
+          -list \
+          -project DNTWEAKS.xcodeproj
+
+      - name: Build
+        run: |
+          xcodebuild \
+          -project DNTWEAKS.xcodeproj \
+          -scheme DNTWEAKS \
+          -configuration Release \
+          -sdk iphoneos \
+          CODE_SIGNING_ALLOWED=NO \
+          clean build
+
+      - name: Upload Logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: BuildLogs
+          path: .
