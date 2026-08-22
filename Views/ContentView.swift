@@ -2,9 +2,20 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var securityManager: SecurityManager
+    @EnvironmentObject var licenseManager: LicenseManager
     @Environment(\.scenePhase) var scenePhase
     
     var body: some View {
+        Group {
+            if !licenseManager.isLicensed {
+                ActivationView()
+            } else {
+                mainAppView
+            }
+        }
+    }
+    
+    var mainAppView: some View {
         ZStack {
             TabView {
                 DashboardView()

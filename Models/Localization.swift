@@ -34,6 +34,14 @@ struct Localization {
             "network_tuning": "Tuning network ping...",
             "launching": "Launching Game...",
             
+            // Activation
+            "activation_required": "Activation Required",
+            "copy_device_id": "Copy Device ID",
+            "enter_license_key": "Enter License Key",
+            "invalid_key": "Invalid or expired license key.",
+            "activate_now": "Activate Now",
+            "contact_admin_desc": "Please provide your Device ID to the administrator to receive a valid license key.",
+            
             // Tweaks
             "display_refresh_rate": "Display Refresh Rate",
             "refresh_rate_desc": "Adjust screen refresh rate globally to save battery or increase smoothness.",
@@ -124,6 +132,14 @@ struct Localization {
             "ram_clearing": "Đang dọn dẹp RAM...",
             "network_tuning": "Giảm độ trễ mạng...",
             "launching": "Đang mở Game...",
+            
+            // Activation
+            "activation_required": "Yêu cầu Kích hoạt",
+            "copy_device_id": "Sao chép Mã Thiết Bị",
+            "enter_license_key": "Nhập Mã Kích Hoạt (License Key)",
+            "invalid_key": "Mã kích hoạt không hợp lệ hoặc đã hết hạn.",
+            "activate_now": "Kích Hoạt Ngay",
+            "contact_admin_desc": "Vui lòng copy Mã Thiết Bị ở trên và gửi cho Quản trị viên để mua Mã Kích Hoạt bản quyền.",
             
             // Tweaks
             "display_refresh_rate": "Tần số quét màn hình",
