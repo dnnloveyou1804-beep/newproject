@@ -2,6 +2,8 @@ import SwiftUI
 
 struct DashboardView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var profileManager: ProfileManager
+    @EnvironmentObject var lang: LanguageManager
     
     let tweaks: [TweakItem] = [
         TweakItem(type: .refreshRate, titleKey: "display_refresh_rate", icon: "display.2", descKey: "refresh_rate_desc"),
@@ -23,13 +25,50 @@ struct DashboardView: View {
                 Color.black.ignoresSafeArea()
                 
                 ScrollView {
-                    HeaderView()
-                        .padding(.horizontal)
-                        .padding(.top)
-                    
-                    LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(tweaks) { tweak in
-                            TweakCardView(tweak: tweak)
+                    VStack(spacing: 16) {
+                        HeaderView()
+                        
+                        // Active Profile Selector
+                        VStack(alignment: .leading, spacing: 8) {
+                            LocalizedText(key: "active_profile")
+                                .font(.subheadline.bold())
+                                .foregroundColor(.gray)
+                                .padding(.horizontal, 4)
+                            
+                            Picker("", selection: Binding(
+                                get: { profileManager.activeProfile },
+                                set: { newValue in
+                                    if let p = ConfigProfile(rawValue: newValue) {
+                                        profileManager.applyProfile(p)
+                                    }
+                                }
+                            )) {
+                                ForEach(ConfigProfile.allCases, id: \.rawValue) { profile in
+                                    Text(lang.localizedString(for: profile == .defaultProfile ? "profile_default" : (profile == .gaming ? "profile_gaming" : "profile_battery"))).tag(profile.rawValue)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(16)
+                        }
+                        
+                        // Game Booster
+                        VStack(alignment: .leading, spacing: 8) {
+                            LocalizedText(key: "game_booster")
+                                .font(.subheadline.bold())
+                                .foregroundColor(.accentColor)
+                                .padding(.horizontal, 4)
+                            
+                            GameBoosterView(gameName: "Free Fire", bundleId: "com.dts.freefireth", icon: "gamecontroller.fill")
+                            GameBoosterView(gameName: "Free Fire Max", bundleId: "com.dts.freefiremax", icon: "flame.fill")
+                        }
+                        
+                        // Tweaks Grid
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(tweaks) { tweak in
+                                TweakCardView(tweak: tweak)
+                            }
                         }
                     }
                     .padding()

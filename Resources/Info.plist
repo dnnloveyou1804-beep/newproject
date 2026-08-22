@@ -8,5 +8,7 @@
 	<string>DN Tweaks</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>DN Tweaks requires FaceID to secure your system configurations.</string>
 </dict>
 </plist>

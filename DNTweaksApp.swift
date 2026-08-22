@@ -5,6 +5,8 @@ struct DNTweaksApp: App {
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var langManager = LanguageManager()
     @StateObject private var sysStats = SystemStatsManager()
+    @StateObject private var securityManager = SecurityManager()
+    @StateObject private var profileManager = ProfileManager()
     
     @AppStorage("AppAppearance") private var appearance: String = "system"
     
@@ -14,6 +16,8 @@ struct DNTweaksApp: App {
                 .environmentObject(themeManager)
                 .environmentObject(langManager)
                 .environmentObject(sysStats)
+                .environmentObject(securityManager)
+                .environmentObject(profileManager)
                 .tint(themeManager.currentTheme.color)
                 .preferredColorScheme(appearance == "dark" ? .dark : (appearance == "light" ? .light : nil))
         }

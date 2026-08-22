@@ -13,6 +13,27 @@ struct Localization {
             "charging": "Charging",
             "discharging": "Unplugged",
             
+            // Device Info
+            "device_model": "Device",
+            "os_version": "OS",
+            "storage": "Storage",
+            "ram": "RAM",
+            "free_of": "free of",
+            
+            // Profiles
+            "active_profile": "Active Configuration",
+            "profile_default": "Default",
+            "profile_gaming": "Gaming Mode",
+            "profile_battery": "Battery Saver",
+            
+            // Game Booster
+            "game_booster": "Game Booster",
+            "optimize_play": "Optimize & Play",
+            "optimizing": "Injecting Tweaks...",
+            "ram_clearing": "Clearing memory...",
+            "network_tuning": "Tuning network ping...",
+            "launching": "Launching Game...",
+            
             // Tweaks
             "display_refresh_rate": "Display Refresh Rate",
             "refresh_rate_desc": "Adjust screen refresh rate globally to save battery or increase smoothness.",
@@ -82,6 +103,27 @@ struct Localization {
             "battery_level": "Pin",
             "charging": "Đang sạc",
             "discharging": "Rút sạc",
+            
+            // Device Info
+            "device_model": "Thiết bị",
+            "os_version": "Hệ điều hành",
+            "storage": "Lưu trữ",
+            "ram": "Bộ nhớ RAM",
+            "free_of": "trống /",
+            
+            // Profiles
+            "active_profile": "Cấu hình Hoạt động",
+            "profile_default": "Mặc định",
+            "profile_gaming": "Chế độ Gaming",
+            "profile_battery": "Tiết kiệm Pin",
+            
+            // Game Booster
+            "game_booster": "Tối ưu Game",
+            "optimize_play": "Tối ưu & Chơi",
+            "optimizing": "Đang ép xung...",
+            "ram_clearing": "Đang dọn dẹp RAM...",
+            "network_tuning": "Giảm độ trễ mạng...",
+            "launching": "Đang mở Game...",
             
             // Tweaks
             "display_refresh_rate": "Tần số quét màn hình",
