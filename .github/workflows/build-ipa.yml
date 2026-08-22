@@ -12,6 +12,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install XcodeGen
+        run: |
+          curl -sL https://github.com/yonaskolb/XcodeGen/releases/download/2.42.0/xcodegen.zip -o xcodegen.zip
+          unzip -q xcodegen.zip
+          sudo cp -R xcodegen/bin/xcodegen /usr/local/bin/
+          sudo cp -R xcodegen/share/xcodegen /usr/local/share/
+
       - name: Generate Xcode Project
         run: xcodegen generate
 
