@@ -1,6 +1,7 @@
 name: DNTweaks
 options:
   bundleIdPrefix: com.yourname
+  xcodeVersion: "15.4"
 targets:
   DNTweaks:
     type: application
