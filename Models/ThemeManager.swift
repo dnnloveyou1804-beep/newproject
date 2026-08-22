@@ -17,5 +17,17 @@ enum AppTheme: String, CaseIterable {
 }
 
 class ThemeManager: ObservableObject {
-    @Published var currentTheme: AppTheme = .neonBlue
+    @AppStorage("AppTheme") private var storedTheme: String = AppTheme.neonBlue.rawValue
+    
+    @Published var currentTheme: AppTheme = .neonBlue {
+        didSet {
+            storedTheme = currentTheme.rawValue
+        }
+    }
+    
+    init() {
+        if let savedTheme = AppTheme(rawValue: storedTheme) {
+            currentTheme = savedTheme
+        }
+    }
 }

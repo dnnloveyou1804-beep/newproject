@@ -16,8 +16,7 @@ enum TweakType {
 struct TweakItem: Identifiable {
     let id = UUID()
     let type: TweakType
-    let title: String
+    let titleKey: String
     let icon: String
-    let description: String
-    let isReal: Bool
+    let descKey: String
 }

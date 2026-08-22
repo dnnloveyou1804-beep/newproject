@@ -4,47 +4,38 @@ struct TweakDetailView: View {
     let tweak: TweakItem
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var lang: LanguageManager
     
-    // States for controls
-    @State private var refreshRate = 2 // 120Hz
-    @State private var performance = 1 // Balanced
-    @State private var pointerSpeed = 1.0
-    @State private var touchSensitivity = 50.0
-    @State private var latency = 0.0
-    @State private var haptic = 1 // Medium
-    @State private var batterySaver = ProcessInfo.processInfo.isLowPowerModeEnabled
-    @State private var badgeStyle = true
+    // Persistent States using AppStorage
+    @AppStorage("tweak_refreshRate") private var refreshRate = 2
+    @AppStorage("tweak_performance") private var performance = 1
+    @AppStorage("tweak_pointerSpeed") private var pointerSpeed = 1.0
+    @AppStorage("tweak_touchSensitivity") private var touchSensitivity = 50.0
+    @AppStorage("tweak_latency") private var latency = 0.0
+    @AppStorage("tweak_haptic") private var haptic = 1
+    @AppStorage("tweak_badgeStyle") private var badgeStyle = true
     
     var body: some View {
         NavigationView {
             Form {
                 Section {
                     VStack(alignment: .leading, spacing: 10) {
-                        if !tweak.isReal {
-                            Label("UI Illustration Only", systemImage: "info.circle.fill")
-                                .foregroundColor(.orange)
-                                .font(.caption.bold())
-                        } else {
-                            Label("App-level Effect", systemImage: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                                .font(.caption.bold())
-                        }
-                        Text(tweak.description)
+                        LocalizedText(key: tweak.descKey)
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
                     .padding(.vertical, 8)
                 }
                 
-                Section(header: Text("Control Panel")) {
+                Section(header: LocalizedText(key: "control_panel")) {
                     controlForTweak()
                 }
             }
-            .navigationTitle(tweak.title)
+            .navigationTitle(lang.localizedString(for: tweak.titleKey))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(lang.localizedString(for: "done")) {
                         dismiss()
                     }
                 }
@@ -53,45 +44,60 @@ struct TweakDetailView: View {
         .preferredColorScheme(.dark)
     }
     
+    private func triggerHaptic() {
+        UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+    }
+    
     @ViewBuilder
     func controlForTweak() -> some View {
         switch tweak.type {
         case .refreshRate:
-            Picker("Refresh Rate", selection: $refreshRate) {
+            Picker("", selection: $refreshRate) {
                 Text("60Hz").tag(0)
                 Text("90Hz").tag(1)
                 Text("120Hz").tag(2)
                 Text("144Hz").tag(3)
             }
             .pickerStyle(.segmented)
+            .onChange(of: refreshRate) { _ in triggerHaptic() }
         case .performance:
-            Picker("Performance", selection: $performance) {
+            Picker("", selection: $performance) {
                 Text("Low").tag(0)
                 Text("Balanced").tag(1)
                 Text("High").tag(2)
                 Text("Ultra").tag(3)
             }
             .pickerStyle(.segmented)
+            .onChange(of: performance) { _ in triggerHaptic() }
         case .pointerSpeed:
             VStack {
-                Slider(value: $pointerSpeed, in: 0.1...3.0)
-                Text(String(format: "%.1fx", pointerSpeed))
+                Slider(value: Binding(
+                    get: { pointerSpeed },
+                    set: { pointerSpeed = $0; triggerHaptic() }
+                ), in: 0.1...3.0)
+                Text("\(lang.localizedString(for: "value")) \(String(format: "%.1fx", pointerSpeed))")
                     .foregroundColor(.gray)
             }
         case .touchSensitivity:
             VStack {
-                Slider(value: $touchSensitivity, in: 0...100)
-                Text("Value: \(Int(touchSensitivity))")
+                Slider(value: Binding(
+                    get: { touchSensitivity },
+                    set: { touchSensitivity = $0; triggerHaptic() }
+                ), in: 0...100)
+                Text("\(lang.localizedString(for: "value")) \(Int(touchSensitivity))")
                     .foregroundColor(.gray)
             }
         case .latency:
             VStack {
-                Slider(value: $latency, in: 0...100)
+                Slider(value: Binding(
+                    get: { latency },
+                    set: { latency = $0; triggerHaptic() }
+                ), in: 0...100)
                 Text("\(Int(latency)) ms")
                     .foregroundColor(.gray)
             }
         case .haptic:
-            Picker("Haptic", selection: $haptic) {
+            Picker("", selection: $haptic) {
                 Text("Light").tag(0)
                 Text("Medium").tag(1)
                 Text("Heavy").tag(2)
@@ -105,17 +111,21 @@ struct TweakDetailView: View {
                 UIImpactFeedbackGenerator(style: style).impactOccurred()
             }
         case .battery:
-            Toggle("Battery Saver (Read-only)", isOn: .constant(ProcessInfo.processInfo.isLowPowerModeEnabled))
+            Toggle("\(lang.localizedString(for: "battery_saver")) \(lang.localizedString(for: "read_only"))", isOn: .constant(ProcessInfo.processInfo.isLowPowerModeEnabled))
                 .disabled(true)
         case .theme:
-            Picker("Theme", selection: $themeManager.currentTheme) {
+            Picker("", selection: $themeManager.currentTheme) {
                 ForEach(AppTheme.allCases, id: \.self) { theme in
                     Text(theme.rawValue).tag(theme)
                 }
             }
             .pickerStyle(.wheel)
+            .onChange(of: themeManager.currentTheme) { _ in triggerHaptic() }
         case .badge:
-            Toggle("Notification Badge", isOn: $badgeStyle)
+            Toggle(lang.localizedString(for: "badge_style"), isOn: Binding(
+                get: { badgeStyle },
+                set: { badgeStyle = $0; triggerHaptic() }
+            ))
         case .reset:
             EmptyView()
         }

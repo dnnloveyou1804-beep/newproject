@@ -11,7 +11,7 @@ struct TweakCardView: View {
                     .font(.title2)
                     .foregroundColor(.accentColor)
                 
-                Text(tweak.title)
+                LocalizedText(key: tweak.titleKey)
                     .font(.system(.subheadline, design: .rounded).bold())
                     .foregroundColor(.white)
                     .multilineTextAlignment(.leading)

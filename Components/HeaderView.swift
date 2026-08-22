@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct HeaderView: View {
+    @EnvironmentObject var sysStats: SystemStatsManager
+    @EnvironmentObject var lang: LanguageManager
+    
     var body: some View {
         HStack {
             Image(systemName: "person.crop.circle.fill")
@@ -8,17 +11,18 @@ struct HeaderView: View {
                 .frame(width: 44, height: 44)
                 .foregroundColor(.gray)
             
-            VStack(alignment: .leading) {
-                Text("DN TWEAKS")
+            VStack(alignment: .leading, spacing: 4) {
+                LocalizedText(key: "dashboard_title")
                     .font(.system(.title3, design: .rounded).bold())
                     .foregroundColor(.white)
-                Text("DEMO MODE")
-                    .font(.caption.weight(.heavy))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.red.opacity(0.8))
-                    .cornerRadius(4)
-                    .foregroundColor(.white)
+                
+                HStack(spacing: 4) {
+                    Image(systemName: sysStats.isCharging ? "battery.100.bolt" : "battery.100")
+                        .foregroundColor(sysStats.isCharging ? .green : .gray)
+                    Text("\(lang.localizedString(for: "battery_level")): \(sysStats.batteryPercentageString) - \(sysStats.isCharging ? lang.localizedString(for: "charging") : lang.localizedString(for: "discharging"))")
+                        .font(.caption2.weight(.medium))
+                        .foregroundColor(.gray)
+                }
             }
             Spacer()
         }
