@@ -78,7 +78,7 @@ struct Localization {
             
             // Settings
             "settings_title": "Settings",
-            "about": "About Duc Thinh",
+            "about": "About DucNamTweaks",
             "reset_all": "Reset All Tweaks",
             "reset_confirm_title": "Reset All Tweaks",
             "reset_confirm_msg": "Are you sure you want to reset all tweak preferences to default?",
@@ -95,8 +95,8 @@ struct Localization {
             "ui_settings": "Interface",
             
             // About
-            "about_title": "About PRIME SENSILOCK",
-            "about_desc": "PRIME SENSILOCK Pro is an advanced system administration panel designed for ultimate device control. This tool provides deep access to system parameters.",
+            "about_title": "About DucNamTweaks",
+            "about_desc": "DucNamTweaks Pro is an advanced system administration panel designed for ultimate device control. This tool provides deep access to system parameters.",
             "features_title": "Core Features:",
             "features_list": "• Overclocking & Performance Profiles\n• Hardware Touch & Haptic Control\n• Real-time Theme Engine\n• Deep System Tuning"
         ],
@@ -177,7 +177,7 @@ struct Localization {
             
             // Settings
             "settings_title": "Cài đặt",
-            "about": "Giới Thiệu Đức Thịnh",
+            "about": "Giới Thiệu DucNamTweaks",
             "reset_all": "Khôi phục Mặc định",
             "reset_confirm_title": "Khôi phục Tất cả",
             "reset_confirm_msg": "Bạn có chắc chắn muốn xoá toàn bộ cấu hình đã lưu và trở về mặc định không?",
@@ -194,8 +194,8 @@ struct Localization {
             "ui_settings": "Giao diện",
             
             // About
-            "about_title": "Giới thiệu PRIME SENSILOCK",
-            "about_desc": "PRIME SENSILOCK là bảng điều khiển quản trị hệ thống nâng cao được thiết kế để kiểm soát thiết bị tối đa. Công cụ này cung cấp khả năng can thiệp sâu vào các thông số lõi.",
+            "about_title": "Giới thiệu DucNamTweaks",
+            "about_desc": "DucNamTweaks là bảng điều khiển quản trị hệ thống nâng cao được thiết kế để kiểm soát thiết bị tối đa. Công cụ này cung cấp khả năng can thiệp sâu vào các thông số lõi.",
             "features_title": "Tính năng Cốt lõi:",
             "features_list": "• Ép xung & Tối ưu Cấu hình\n• Can thiệp Cảm ứng & Phản hồi Rung\n• Đổi màu sắc thời gian thực\n• Tinh chỉnh Hệ thống Chuyên sâu"
         ]

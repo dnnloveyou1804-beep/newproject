@@ -5,6 +5,7 @@ struct MobileconfigCardView: View {
     @EnvironmentObject var localServer: LocalProfileServer
     @State private var showPicker = false
     @State private var selectedFileURL: URL? = nil
+    @State private var isRainbowAnimating = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -27,9 +28,25 @@ struct MobileconfigCardView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Cấu Hình Hệ Thống")
+                    Text("Zalo 0395109314")
                         .font(.headline).bold()
-                        .foregroundColor(.white)
+                        .overlay(
+                            LinearGradient(
+                                colors: [.red, .orange, .yellow, .green, .blue, .purple, .red],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .mask(
+                            Text("Zalo 0395109314")
+                                .font(.headline).bold()
+                        )
+                        .hueRotation(.degrees(isRainbowAnimating ? 360 : 0))
+                        .onAppear {
+                            withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                                isRainbowAnimating = true
+                            }
+                        }
                     
                     Text(selectedFileURL != nil ? selectedFileURL!.lastPathComponent : "Chưa chọn file cấu hình")
                         .font(.caption)
@@ -79,7 +96,7 @@ struct MobileconfigCardView: View {
         )
         .fileImporter(
             isPresented: $showPicker,
-            allowedContentTypes: [.data],
+            allowedContentTypes: [.item],
             allowsMultipleSelection: false
         ) { result in
             do {
