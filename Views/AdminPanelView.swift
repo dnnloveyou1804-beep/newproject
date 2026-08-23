@@ -11,36 +11,18 @@ struct AdminPanelView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Key Generator")) {
-                    TextField("Enter Client Device ID (e.g. ABC-123)", text: $inputDeviceID)
-                        .autocapitalization(.allCharacters)
-                        .disableAutocorrection(true)
+                Section(header: Text("Quản lý Key Server")) {
+                    Text("Hệ thống License Key hiện tại đã được nâng cấp lên Backend API (ddnkey.ddnstore). Vui lòng sử dụng Web Panel để quản lý và tạo Key.")
+                        .font(.caption)
+                        .foregroundColor(.gray)
                     
-                    Button("Generate License Key") {
-                        if !inputDeviceID.isEmpty {
-                            generatedKey = licenseManager.generateKey(for: inputDeviceID.uppercased())
-                            UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-                        }
-                    }
-                    .foregroundColor(.accentColor)
-                }
-                
-                if !generatedKey.isEmpty {
-                    Section(header: Text("Generated Key")) {
+                    Link(destination: URL(string: "https://ddnkey.ddnstore.workers.dev")!) {
                         HStack {
-                            Text(generatedKey)
-                                .font(.system(.body, design: .monospaced).bold())
-                                .foregroundColor(.green)
-                            
-                            Spacer()
-                            
-                            Button(action: {
-                                UIPasteboard.general.string = generatedKey
-                                UINotificationFeedbackGenerator().notificationOccurred(.success)
-                            }) {
-                                Image(systemName: "doc.on.doc")
-                            }
+                            Image(systemName: "globe")
+                            Text("Mở Web Admin Panel")
+                                .bold()
                         }
+                        .foregroundColor(.accentColor)
                     }
                 }
             }

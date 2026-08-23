@@ -45,7 +45,7 @@ class LocalProfileServer: ObservableObject {
         
         // Receive the HTTP Request
         connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { [weak self] data, _, isComplete, error in
-            guard let self = self else { return }
+            guard self != nil else { return }
             
             // Check if file exists
             if let fileURL = Bundle.main.url(forResource: "DucThinh", withExtension: "mobileconfig"),
