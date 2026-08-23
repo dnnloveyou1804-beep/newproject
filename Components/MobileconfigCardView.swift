@@ -15,13 +15,22 @@ struct MobileconfigCardView: View {
             }
         }) {
             HStack(spacing: 16) {
-                Image(systemName: "gearbadge")
-                    .font(.system(size: 30))
-                    .foregroundColor(.white)
-                    .frame(width: 60, height: 60)
-                    .background(LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .cornerRadius(16)
-                    .shadow(color: .purple.opacity(0.5), radius: 8)
+                if let uiImage = UIImage(named: "logo.jpg") {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 60, height: 60)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .shadow(color: .accentColor.opacity(0.5), radius: 8)
+                } else {
+                    Image(systemName: "gearbadge")
+                        .font(.system(size: 30))
+                        .foregroundColor(.white)
+                        .frame(width: 60, height: 60)
+                        .background(LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .cornerRadius(16)
+                        .shadow(color: .purple.opacity(0.5), radius: 8)
+                }
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cấu Hình Hệ Thống")

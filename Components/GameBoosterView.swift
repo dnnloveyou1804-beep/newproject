@@ -4,6 +4,7 @@ struct GameBoosterView: View {
     let gameName: String
     let bundleId: String
     let icon: String
+    var imageName: String? = nil
     
     @EnvironmentObject var profileManager: ProfileManager
     @EnvironmentObject var lang: LanguageManager
@@ -15,12 +16,20 @@ struct GameBoosterView: View {
     
     var body: some View {
         HStack {
-            Image(systemName: icon)
-                .font(.title)
-                .foregroundColor(.accentColor)
-                .frame(width: 50, height: 50)
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(12)
+            if let img = imageName, let uiImage = UIImage(named: img) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            } else {
+                Image(systemName: icon)
+                    .font(.title)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 50, height: 50)
+                    .background(Color.white.opacity(0.1))
+                    .cornerRadius(12)
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(gameName)

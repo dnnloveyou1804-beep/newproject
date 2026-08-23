@@ -66,8 +66,8 @@ struct DashboardView: View {
                                 .foregroundColor(.accentColor)
                                 .padding(.horizontal, 4)
                             
-                            GameBoosterView(gameName: "Free Fire", bundleId: "com.dts.freefireth", icon: "gamecontroller.fill")
-                            GameBoosterView(gameName: "Free Fire Max", bundleId: "com.dts.freefiremax", icon: "flame.fill")
+                            GameBoosterView(gameName: "Free Fire", bundleId: "com.dts.freefireth", icon: "gamecontroller.fill", imageName: "ff.png")
+                            GameBoosterView(gameName: "Free Fire Max", bundleId: "com.dts.freefiremax", icon: "flame.fill", imageName: "ffmax.png")
                         }
                         
                         // Tweaks Grid
