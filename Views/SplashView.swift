@@ -25,7 +25,7 @@ struct SplashView: View {
                     .opacity(opacity)
                 
                 VStack(spacing: 20) {
-                    if let uiImage = UIImage(named: "logo.jpg") {
+                    if let uiImage = UIImage(named: "dnxlogo.jpg") {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFit()
@@ -44,12 +44,12 @@ struct SplashView: View {
                             .shadow(color: .accentColor, radius: 10 + glowOffset)
                     }
                     
-                    Text("PRIME SENSILOCK")
+                    Text("DucNamTweaks")
                         .font(.system(size: 32, weight: .heavy, design: .rounded))
                         .foregroundColor(.white)
                         .shadow(color: .white.opacity(0.5), radius: 5 + glowOffset)
                     
-                    Text("Admin: DucThinh")
+                    Text("Admin: DucNam")
                         .font(.headline)
                         .foregroundColor(.gray)
                         .tracking(2.0)

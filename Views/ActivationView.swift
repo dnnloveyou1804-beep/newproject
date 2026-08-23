@@ -147,6 +147,24 @@ struct ActivationView: View {
                     }
                     .disabled(inputKey.isEmpty || isActivating)
                     .opacity(inputKey.isEmpty ? 0.5 : 1.0)
+                    
+                    // GET KEY Button
+                    Link(destination: URL(string: "https://dntweakskey.netlify.app/")!) {
+                        HStack {
+                            Image(systemName: "key.fill")
+                            Text("Nhận Key Miễn Phí (Get Key)")
+                                .font(.headline).bold()
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.black.opacity(0.6))
+                        .foregroundColor(.green)
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.green.opacity(0.5), lineWidth: 1)
+                        )
+                    }
                 }
                 .padding(.horizontal, 30)
                 
@@ -159,7 +177,7 @@ struct ActivationView: View {
                         .padding(.horizontal, 40)
                     
                     HStack(spacing: 20) {
-                        Link(destination: URL(string: "https://www.tiktok.com/@ducthinhloveyoutiktok")!) {
+                        Link(destination: URL(string: "https://www.tiktok.com/@dnnnloveyou")!) {
                             VStack {
                                 Image(systemName: "play.tv.fill")
                                     .font(.title2)
@@ -172,7 +190,7 @@ struct ActivationView: View {
                             .cornerRadius(10)
                         }
                         
-                        Link(destination: URL(string: "https://t.me/ducthinhdz02")!) {
+                        Link(destination: URL(string: "https://t.me/dntweaks")!) {
                             VStack {
                                 Image(systemName: "paperplane.fill")
                                     .font(.title2)
@@ -185,7 +203,7 @@ struct ActivationView: View {
                             .cornerRadius(10)
                         }
                         
-                        Link(destination: URL(string: "https://zalo.me/84827865031")!) {
+                        Link(destination: URL(string: "https://zalo.me/84395109314")!) {
                             VStack {
                                 Image(systemName: "message.fill")
                                     .font(.title2)

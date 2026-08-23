@@ -1,21 +1,15 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MobileconfigCardView: View {
     @EnvironmentObject var localServer: LocalProfileServer
-    @State private var showAlert = false
+    @State private var showPicker = false
+    @State private var selectedFileURL: URL? = nil
     
     var body: some View {
-        Button(action: {
-            if Bundle.main.url(forResource: "DucThinh", withExtension: "mobileconfig") != nil {
-                UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
-                localServer.installProfile()
-            } else {
-                self.showAlert = true
-                UINotificationFeedbackGenerator().notificationOccurred(.error)
-            }
-        }) {
+        VStack(spacing: 16) {
             HStack(spacing: 16) {
-                if let uiImage = UIImage(named: "logo.jpg") {
+                if let uiImage = UIImage(named: "dnxlogo.jpg") {
                     Image(uiImage: uiImage)
                         .resizable()
                         .scaledToFill()
@@ -37,29 +31,65 @@ struct MobileconfigCardView: View {
                         .font(.headline).bold()
                         .foregroundColor(.white)
                     
-                    Text("DucThinh.mobileconfig")
+                    Text(selectedFileURL != nil ? selectedFileURL!.lastPathComponent : "Chưa chọn file cấu hình")
                         .font(.caption)
-                        .foregroundColor(.gray)
+                        .foregroundColor(selectedFileURL != nil ? .green : .gray)
+                        .lineLimit(1)
                 }
                 
                 Spacer()
-                
-                Image(systemName: "icloud.and.arrow.down.fill")
-                    .font(.title2)
-                    .foregroundColor(.accentColor)
             }
-            .padding()
-            .background(.ultraThinMaterial)
-            .cornerRadius(20)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color.white.opacity(0.1), lineWidth: 1)
-            )
+            
+            HStack(spacing: 12) {
+                Button(action: {
+                    showPicker = true
+                }) {
+                    Text("Chọn File")
+                        .font(.subheadline).bold()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(Color.white.opacity(0.2))
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                
+                Button(action: {
+                    if let url = selectedFileURL {
+                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                        localServer.installProfile(from: url)
+                    }
+                }) {
+                    Text("Kích Hoạt")
+                        .font(.subheadline).bold()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                        .background(selectedFileURL != nil ? Color.accentColor : Color.gray.opacity(0.5))
+                        .foregroundColor(.black)
+                        .cornerRadius(12)
+                }
+                .disabled(selectedFileURL == nil)
+            }
         }
-        .alert("File Not Found", isPresented: $showAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("DucThinh.mobileconfig was not found in the app bundle. Please ensure it was included during compilation.")
+        .padding()
+        .background(.ultraThinMaterial)
+        .cornerRadius(20)
+        .overlay(
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+        )
+        .fileImporter(
+            isPresented: $showPicker,
+            allowedContentTypes: [.data],
+            allowsMultipleSelection: false
+        ) { result in
+            do {
+                guard let selectedFile = try result.get().first else { return }
+                if selectedFile.pathExtension.lowercased() == "mobileconfig" {
+                    selectedFileURL = selectedFile
+                }
+            } catch {
+                print("Failed to read file: \(error.localizedDescription)")
+            }
         }
     }
 }

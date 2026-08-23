@@ -4,7 +4,7 @@ struct Localization {
     static let translations: [AppLanguage: [String: String]] = [
         .english: [
             // Dashboard
-            "dashboard_title": "PRIME SENSILOCK",
+            "dashboard_title": "DucNamTweaks",
             "dashboard_tab": "Dashboard",
             "settings_tab": "Settings",
             
@@ -103,7 +103,7 @@ struct Localization {
         
         .vietnamese: [
             // Dashboard
-            "dashboard_title": "PRIME SENSILOCK",
+            "dashboard_title": "DucNamTweaks",
             "dashboard_tab": "Bảng điều khiển",
             "settings_tab": "Cài đặt",
             

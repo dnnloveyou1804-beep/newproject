@@ -5,9 +5,9 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.yourname.dntweaks</string>
 	<key>CFBundleName</key>
-	<string>PRIME SENSILOCK</string>
+	<string>DucNamTweaks</string>
 	<key>CFBundleDisplayName</key>
-	<string>PRIME SENSILOCK</string>
+	<string>DucNamTweaks</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>NSFaceIDUsageDescription</key>
