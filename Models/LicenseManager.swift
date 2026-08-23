@@ -5,69 +5,122 @@ import CryptoKit
 class LicenseManager: ObservableObject {
     @AppStorage("IsAppLicensed") private(set) var isLicensed: Bool = false
     @AppStorage("SavedLicenseKey") private var savedKey: String = ""
+    @AppStorage("LicenseExpiry") private(set) var expiresAt: String = ""
     
-    private let secretSalt = "DNTWEAKS_PRO_VIP_2026"
     let adminPassword = "dn1804"
-    
     @Published var deviceID: String = ""
     
     init() {
         self.deviceID = getDeviceID()
-        
-        // Double check validity on startup
-        if isLicensed {
-            if !validateKey(savedKey, for: deviceID) {
-                isLicensed = false
-                savedKey = ""
-            }
-        }
+        checkLocalExpiry()
     }
     
     func getDeviceID() -> String {
         guard let vendorID = UIDevice.current.identifierForVendor?.uuidString else {
             return "UNKNOWN-DEVICE"
         }
-        // Take first 10 characters for simpler UX
+        // Lấy 10 ký tự đầu cho ngắn gọn
         let prefix = String(vendorID.prefix(10))
         return prefix
     }
     
-    func generateKey(for targetDeviceID: String) -> String {
-        let rawString = targetDeviceID + secretSalt
-        let data = Data(rawString.utf8)
-        let hash = SHA256.hash(data: data)
-        let hashString = hash.compactMap { String(format: "%02x", $0) }.joined()
-        
-        // Return a formatted 12-character key (e.g., A1B2-C3D4-E5F6)
-        let keyPrefix = String(hashString.prefix(12)).uppercased()
-        let p1 = keyPrefix.prefix(4)
-        let p2 = keyPrefix.dropFirst(4).prefix(4)
-        let p3 = keyPrefix.dropFirst(8).prefix(4)
-        
-        return "\(p1)-\(p2)-\(p3)"
+    private func checkLocalExpiry() {
+        if isLicensed {
+            if savedKey.lowercased() == "dntweaks" { return } // Key bypass luôn đúng
+            
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            
+            let fallbackFormatter = ISO8601DateFormatter()
+            
+            if let expDate = formatter.date(from: expiresAt) ?? fallbackFormatter.date(from: expiresAt) {
+                if expDate < Date() {
+                    // Hết hạn
+                    isLicensed = false
+                    savedKey = ""
+                    expiresAt = ""
+                }
+            }
+        }
     }
     
-    func validateKey(_ key: String, for targetDeviceID: String) -> Bool {
+    func getFormattedExpiryDate() -> String {
+        if savedKey.lowercased() == "dntweaks" {
+            return "Vĩnh viễn (Bypass Key)"
+        }
+        guard !expiresAt.isEmpty else { return "Không xác định" }
+        
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let fallbackFormatter = ISO8601DateFormatter()
+        
+        if let date = formatter.date(from: expiresAt) ?? fallbackFormatter.date(from: expiresAt) {
+            let displayFormatter = DateFormatter()
+            displayFormatter.dateFormat = "HH:mm - dd/MM/yyyy"
+            return displayFormatter.string(from: date)
+        }
+        return "Lỗi định dạng ngày"
+    }
+    
+    func activate(with key: String, completion: @escaping (Bool, String?) -> Void) {
         let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        // Master Bypass Key for testing
+        // Master Bypass Key
         if trimmedKey.lowercased() == "dntweaks" {
-            return true
+            DispatchQueue.main.async {
+                self.isLicensed = true
+                self.savedKey = "dntweaks"
+                self.expiresAt = "2099-12-31T23:59:59.000Z"
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                completion(true, nil)
+            }
+            return
         }
         
-        let expectedKey = generateKey(for: targetDeviceID)
-        return trimmedKey.uppercased() == expectedKey
-    }
-    
-    func activate(with key: String) -> Bool {
-        if validateKey(key, for: deviceID) {
-            isLicensed = true
-            savedKey = key.uppercased()
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            return true
-        } else {
-            UINotificationFeedbackGenerator().notificationOccurred(.error)
-            return false
+        guard let url = URL(string: "https://ddnkey.ddnstore.workers.dev/api/activate") else {
+            completion(false, "Lỗi đường dẫn API")
+            return
         }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let payload: [String: String] = ["key": trimmedKey, "hwid": deviceID]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: payload)
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            DispatchQueue.main.async {
+                if let _ = error {
+                    completion(false, "Lỗi kết nối mạng, vui lòng thử lại")
+                    return
+                }
+                
+                guard let data = data else {
+                    completion(false, "Không có dữ liệu phản hồi từ máy chủ")
+                    return
+                }
+                
+                do {
+                    if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        let ok = json["ok"] as? Bool ?? false
+                        if ok {
+                            self.isLicensed = true
+                            self.savedKey = trimmedKey.uppercased()
+                            self.expiresAt = json["expiresAt"] as? String ?? ""
+                            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                            completion(true, nil)
+                        } else {
+                            let errorMsg = json["error"] as? String ?? "Lỗi không xác định từ Server"
+                            completion(false, errorMsg)
+                        }
+                    } else {
+                        completion(false, "Dữ liệu máy chủ bị lỗi định dạng")
+                    }
+                } catch {
+                    completion(false, "Không thể đọc dữ liệu phản hồi")
+                }
+            }
+        }.resume()
     }
 }

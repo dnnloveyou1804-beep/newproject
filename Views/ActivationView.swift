@@ -8,6 +8,9 @@ struct ActivationView: View {
     @State private var showError = false
     @State private var isActivating = false
     
+    @State private var ledRotation: Double = 0.0
+    @State private var errorText: String = ""
+    
     // Hidden admin entry
     @State private var titleTapCount = 0
     @State private var showAdminLogin = false
@@ -85,25 +88,39 @@ struct ActivationView: View {
                 }
                 .padding(.vertical, 10)
                 
-                // Input Field
+                // Input Field with RGB LED Border
                 VStack(spacing: 16) {
                     TextField(lang.localizedString(for: "enter_license_key"), text: $inputKey)
                         .font(.system(.body, design: .monospaced).bold())
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .autocapitalization(.allCharacters)
                         .disableAutocorrection(true)
                         .padding()
-                        .background(.ultraThinMaterial)
+                        .background(Color.black.opacity(0.8))
                         .cornerRadius(16)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(showError ? Color.red : (inputKey.isEmpty ? Color.white.opacity(0.2) : Color.accentColor), lineWidth: 2)
+                                .strokeBorder(
+                                    AngularGradient(
+                                        gradient: Gradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red]),
+                                        center: .center,
+                                        angle: .degrees(ledRotation)
+                                    ),
+                                    lineWidth: 3
+                                )
+                                .mask(RoundedRectangle(cornerRadius: 16))
                         )
-                        .shadow(color: showError ? .red.opacity(0.5) : (inputKey.isEmpty ? .clear : .accentColor.opacity(0.5)), radius: 5)
+                        .shadow(color: showError ? .red.opacity(0.8) : .purple.opacity(0.5), radius: 8)
                         .animation(.easeInOut, value: inputKey)
+                        .onAppear {
+                            withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
+                                ledRotation = 360.0
+                            }
+                        }
                     
                     if showError {
-                        LocalizedText(key: "invalid_key")
+                        Text(errorText)
                             .font(.caption.bold())
                             .foregroundColor(.red)
                             .transition(.opacity)
@@ -204,19 +221,18 @@ struct ActivationView: View {
     
     private func handleActivation() {
         isActivating = true
+        showError = false
         UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
         
-        // Simulate a slight network delay for dramatic effect
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let success = licenseManager.activate(with: inputKey)
+        licenseManager.activate(with: inputKey) { success, errorMessage in
             if success {
-                // The ContentView will automatically transition because isLicensed changed!
                 UINotificationFeedbackGenerator().notificationOccurred(.success)
             } else {
                 showError = true
+                errorText = errorMessage ?? lang.localizedString(for: "invalid_key")
                 isActivating = false
                 UINotificationFeedbackGenerator().notificationOccurred(.error)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                     showError = false
                 }
             }

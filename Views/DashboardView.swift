@@ -4,6 +4,7 @@ struct DashboardView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var profileManager: ProfileManager
     @EnvironmentObject var lang: LanguageManager
+    @EnvironmentObject var licenseManager: LicenseManager
     
     @State private var isActivatingTweaks = false
     @State private var activationSuccess = false
@@ -30,6 +31,24 @@ struct DashboardView: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         HeaderView()
+                        
+                        // VIP Expiry Badge
+                        HStack {
+                            Image(systemName: "crown.fill")
+                                .foregroundColor(.yellow)
+                            Text("Key Hết Hạn: \(licenseManager.getFormattedExpiryDate())")
+                                .font(.caption.bold())
+                                .foregroundColor(.white)
+                            Spacer()
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(Color.yellow.opacity(0.15))
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.yellow.opacity(0.4), lineWidth: 1)
+                        )
                         
                         // Mobileconfig Profile
                         MobileconfigCardView()
