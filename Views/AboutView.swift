@@ -13,7 +13,7 @@ struct AboutView: View {
                     .padding()
                 
                 LocalizedText(key: "about_title")
-                    .font(.largeTitle.bold())
+                    .font(.largeTitle).bold()
                     .frame(maxWidth: .infinity)
                 
                 LocalizedText(key: "about_desc")

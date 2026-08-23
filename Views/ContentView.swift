@@ -37,7 +37,7 @@ struct ContentView: View {
                         .foregroundColor(.accentColor)
                     
                     LocalizedText(key: "dashboard_title")
-                        .font(.largeTitle.bold())
+                        .font(.largeTitle).bold()
                     
                     Button("Unlock with FaceID / TouchID") {
                         securityManager.authenticate()

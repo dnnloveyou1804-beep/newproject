@@ -37,7 +37,7 @@ struct DashboardView: View {
                             Image(systemName: "crown.fill")
                                 .foregroundColor(.yellow)
                             Text("Key Hết Hạn: \(licenseManager.getFormattedExpiryDate())")
-                                .font(.caption.bold())
+                                .font(.caption).bold()
                                 .foregroundColor(.white)
                             Spacer()
                         }
@@ -56,7 +56,7 @@ struct DashboardView: View {
                         // Active Profile Selector
                         VStack(alignment: .leading, spacing: 8) {
                             LocalizedText(key: "active_profile")
-                                .font(.subheadline.bold())
+                                .font(.subheadline).bold()
                                 .foregroundColor(.gray)
                                 .padding(.horizontal, 4)
                             
@@ -81,7 +81,7 @@ struct DashboardView: View {
                         // Game Booster
                         VStack(alignment: .leading, spacing: 8) {
                             LocalizedText(key: "game_booster")
-                                .font(.subheadline.bold())
+                                .font(.subheadline).bold()
                                 .foregroundColor(.accentColor)
                                 .padding(.horizontal, 4)
                             
@@ -117,16 +117,16 @@ struct DashboardView: View {
                                         ProgressView()
                                             .progressViewStyle(CircularProgressViewStyle(tint: .black))
                                         Text("Đang nạp vào lõi hệ thống...")
-                                            .font(.headline.bold())
+                                            .font(.headline).bold()
                                             .foregroundColor(.black)
                                     } else if activationSuccess {
                                         Image(systemName: "checkmark.circle.fill")
                                         Text("KÍCH HOẠT THÀNH CÔNG")
-                                            .font(.headline.bold())
+                                            .font(.headline).bold()
                                     } else {
                                         Image(systemName: "bolt.fill")
                                         Text("KÍCH HOẠT THAY ĐỔI")
-                                            .font(.headline.bold())
+                                            .font(.headline).bold()
                                     }
                                 }
                                 .frame(maxWidth: .infinity)

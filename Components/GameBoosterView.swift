@@ -46,7 +46,7 @@ struct GameBoosterView: View {
                 startLaunchSequence()
             }) {
                 Text(lang.localizedString(for: "optimize_play"))
-                    .font(.caption.bold())
+                    .font(.caption).bold()
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(Color.accentColor)
@@ -71,7 +71,7 @@ struct GameBoosterView: View {
                                 .padding(.bottom, 8)
                             
                             LocalizedText(key: launchSteps[launchStep])
-                                .font(.caption.bold())
+                                .font(.caption).bold()
                                 .foregroundColor(.accentColor)
                         }
                     }

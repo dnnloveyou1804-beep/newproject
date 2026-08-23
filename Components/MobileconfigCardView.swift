@@ -34,7 +34,7 @@ struct MobileconfigCardView: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Cấu Hình Hệ Thống")
-                        .font(.headline.bold())
+                        .font(.headline).bold()
                         .foregroundColor(.white)
                     
                     Text("DucThinh.mobileconfig")

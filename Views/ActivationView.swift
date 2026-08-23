@@ -82,7 +82,7 @@ struct ActivationView: View {
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                     }) {
                         Label(lang.localizedString(for: "copy_device_id"), systemImage: "doc.on.doc.fill")
-                            .font(.subheadline.bold())
+                            .font(.subheadline).bold()
                             .foregroundColor(.accentColor)
                     }
                 }
@@ -121,7 +121,7 @@ struct ActivationView: View {
                     
                     if showError {
                         Text(errorText)
-                            .font(.caption.bold())
+                            .font(.caption).bold()
                             .foregroundColor(.red)
                             .transition(.opacity)
                     }
@@ -135,7 +135,7 @@ struct ActivationView: View {
                                     .progressViewStyle(CircularProgressViewStyle(tint: .black))
                             } else {
                                 Text(lang.localizedString(for: "activate_now"))
-                                    .font(.headline.bold())
+                                    .font(.headline).bold()
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -164,7 +164,7 @@ struct ActivationView: View {
                                 Image(systemName: "play.tv.fill")
                                     .font(.title2)
                                 Text("TikTok")
-                                    .font(.caption.bold())
+                                    .font(.caption).bold()
                             }
                             .foregroundColor(.white)
                             .padding(10)
@@ -177,7 +177,7 @@ struct ActivationView: View {
                                 Image(systemName: "paperplane.fill")
                                     .font(.title2)
                                 Text("Telegram")
-                                    .font(.caption.bold())
+                                    .font(.caption).bold()
                             }
                             .foregroundColor(.blue)
                             .padding(10)
@@ -190,7 +190,7 @@ struct ActivationView: View {
                                 Image(systemName: "message.fill")
                                     .font(.title2)
                                 Text("Zalo")
-                                    .font(.caption.bold())
+                                    .font(.caption).bold()
                             }
                             .foregroundColor(.cyan)
                             .padding(10)
