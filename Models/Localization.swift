@@ -78,7 +78,7 @@ struct Localization {
             
             // Settings
             "settings_title": "Settings",
-            "about": "About DN Tweaks",
+            "about": "About Duc Thinh",
             "reset_all": "Reset All Tweaks",
             "reset_confirm_title": "Reset All Tweaks",
             "reset_confirm_msg": "Are you sure you want to reset all tweak preferences to default?",
@@ -177,7 +177,7 @@ struct Localization {
             
             // Settings
             "settings_title": "Cài đặt",
-            "about": "Giới thiệu DN Tweaks",
+            "about": "Giới Thiệu Đức Thịnh",
             "reset_all": "Khôi phục Mặc định",
             "reset_confirm_title": "Khôi phục Tất cả",
             "reset_confirm_msg": "Bạn có chắc chắn muốn xoá toàn bộ cấu hình đã lưu và trở về mặc định không?",
