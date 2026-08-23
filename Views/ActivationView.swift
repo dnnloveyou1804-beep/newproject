@@ -133,14 +133,56 @@ struct ActivationView: View {
                 }
                 .padding(.horizontal, 30)
                 
-                Spacer()
-                
-                LocalizedText(key: "contact_admin_desc")
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-                    .padding(.bottom, 20)
+                // Social Links
+                VStack(spacing: 12) {
+                    LocalizedText(key: "contact_admin_desc")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.6))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 40)
+                    
+                    HStack(spacing: 20) {
+                        Link(destination: URL(string: "https://www.tiktok.com/@ducthinhloveyoutiktok")!) {
+                            VStack {
+                                Image(systemName: "play.tv.fill")
+                                    .font(.title2)
+                                Text("TikTok")
+                                    .font(.caption.bold())
+                            }
+                            .foregroundColor(.white)
+                            .padding(10)
+                            .background(Color.black.opacity(0.5))
+                            .cornerRadius(10)
+                        }
+                        
+                        Link(destination: URL(string: "https://t.me/ducthinhdz02")!) {
+                            VStack {
+                                Image(systemName: "paperplane.fill")
+                                    .font(.title2)
+                                Text("Telegram")
+                                    .font(.caption.bold())
+                            }
+                            .foregroundColor(.blue)
+                            .padding(10)
+                            .background(Color.black.opacity(0.5))
+                            .cornerRadius(10)
+                        }
+                        
+                        Link(destination: URL(string: "https://zalo.me/84827865031")!) {
+                            VStack {
+                                Image(systemName: "message.fill")
+                                    .font(.title2)
+                                Text("Zalo")
+                                    .font(.caption.bold())
+                            }
+                            .foregroundColor(.cyan)
+                            .padding(10)
+                            .background(Color.black.opacity(0.5))
+                            .cornerRadius(10)
+                        }
+                    }
+                }
+                .padding(.bottom, 20)
             }
         }
         .alert("Admin Login", isPresented: $showAdminLogin) {

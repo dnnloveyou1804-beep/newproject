@@ -5,6 +5,9 @@ struct DashboardView: View {
     @EnvironmentObject var profileManager: ProfileManager
     @EnvironmentObject var lang: LanguageManager
     
+    @State private var isActivatingTweaks = false
+    @State private var activationSuccess = false
+    
     let tweaks: [TweakItem] = [
         TweakItem(type: .refreshRate, titleKey: "display_refresh_rate", icon: "display.2", descKey: "refresh_rate_desc"),
         TweakItem(type: .performance, titleKey: "performance_profile", icon: "bolt.fill", descKey: "performance_desc"),
@@ -73,6 +76,49 @@ struct DashboardView: View {
                                 TweakCardView(tweak: tweak)
                             }
                         }
+                        
+                        // Activate Tweaks Button
+                        VStack {
+                            Button(action: {
+                                isActivatingTweaks = true
+                                UIImpactFeedbackGenerator(style: .rigid).impactOccurred()
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                    isActivatingTweaks = false
+                                    activationSuccess = true
+                                    UINotificationFeedbackGenerator().notificationOccurred(.success)
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                        activationSuccess = false
+                                    }
+                                }
+                            }) {
+                                HStack {
+                                    if isActivatingTweaks {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .black))
+                                        Text("Đang nạp vào lõi hệ thống...")
+                                            .font(.headline.bold())
+                                            .foregroundColor(.black)
+                                    } else if activationSuccess {
+                                        Image(systemName: "checkmark.circle.fill")
+                                        Text("KÍCH HOẠT THÀNH CÔNG")
+                                            .font(.headline.bold())
+                                    } else {
+                                        Image(systemName: "bolt.fill")
+                                        Text("KÍCH HOẠT THAY ĐỔI")
+                                            .font(.headline.bold())
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 16)
+                                .background(activationSuccess ? Color.green : Color.accentColor)
+                                .foregroundColor(activationSuccess ? .white : .black)
+                                .cornerRadius(16)
+                                .shadow(color: (activationSuccess ? Color.green : Color.accentColor).opacity(0.5), radius: 10)
+                            }
+                        }
+                        .padding(.vertical, 20)
                     }
                     .padding()
                 }

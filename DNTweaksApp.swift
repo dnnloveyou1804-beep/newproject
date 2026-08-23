@@ -8,6 +8,7 @@ struct DNTweaksApp: App {
     @StateObject private var securityManager = SecurityManager()
     @StateObject private var profileManager = ProfileManager()
     @StateObject private var licenseManager = LicenseManager()
+    @StateObject private var localServer = LocalProfileServer()
     
     @AppStorage("AppAppearance") private var appearance: String = "system"
     @State private var showSplash = true
@@ -27,6 +28,7 @@ struct DNTweaksApp: App {
             .environmentObject(securityManager)
             .environmentObject(profileManager)
             .environmentObject(licenseManager)
+            .environmentObject(localServer)
             .tint(themeManager.currentTheme.color)
             .preferredColorScheme(appearance == "dark" ? .dark : (appearance == "light" ? .light : nil))
         }

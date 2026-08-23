@@ -4,7 +4,7 @@ struct Localization {
     static let translations: [AppLanguage: [String: String]] = [
         .english: [
             // Dashboard
-            "dashboard_title": "DN TWEAKS",
+            "dashboard_title": "PRIME SENSILOCK",
             "dashboard_tab": "Dashboard",
             "settings_tab": "Settings",
             
@@ -95,15 +95,15 @@ struct Localization {
             "ui_settings": "Interface",
             
             // About
-            "about_title": "About DN Tweaks",
-            "about_desc": "DN Tweaks Pro is an advanced system administration panel designed for ultimate device control. This tool provides deep access to system parameters.",
+            "about_title": "About PRIME SENSILOCK",
+            "about_desc": "PRIME SENSILOCK Pro is an advanced system administration panel designed for ultimate device control. This tool provides deep access to system parameters.",
             "features_title": "Core Features:",
             "features_list": "• Overclocking & Performance Profiles\n• Hardware Touch & Haptic Control\n• Real-time Theme Engine\n• Deep System Tuning"
         ],
         
         .vietnamese: [
             // Dashboard
-            "dashboard_title": "DN TWEAKS",
+            "dashboard_title": "PRIME SENSILOCK",
             "dashboard_tab": "Bảng điều khiển",
             "settings_tab": "Cài đặt",
             
@@ -194,8 +194,8 @@ struct Localization {
             "ui_settings": "Giao diện",
             
             // About
-            "about_title": "Giới thiệu DN Tweaks",
-            "about_desc": "DN Tweaks Pro là bảng điều khiển quản trị hệ thống nâng cao được thiết kế để kiểm soát thiết bị tối đa. Công cụ này cung cấp khả năng can thiệp sâu vào các thông số lõi.",
+            "about_title": "Giới thiệu PRIME SENSILOCK",
+            "about_desc": "PRIME SENSILOCK là bảng điều khiển quản trị hệ thống nâng cao được thiết kế để kiểm soát thiết bị tối đa. Công cụ này cung cấp khả năng can thiệp sâu vào các thông số lõi.",
             "features_title": "Tính năng Cốt lõi:",
             "features_list": "• Ép xung & Tối ưu Cấu hình\n• Can thiệp Cảm ứng & Phản hồi Rung\n• Đổi màu sắc thời gian thực\n• Tinh chỉnh Hệ thống Chuyên sâu"
         ]

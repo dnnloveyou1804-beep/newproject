@@ -25,13 +25,27 @@ struct SplashView: View {
                     .opacity(opacity)
                 
                 VStack(spacing: 20) {
-                    Image(systemName: "cpu.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.accentColor)
-                        .shadow(color: .accentColor, radius: 10 + glowOffset)
+                    if let uiImage = UIImage(named: "logo.jpg") {
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 150, height: 150)
+                            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
+                            .shadow(color: .accentColor, radius: 15 + glowOffset)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 30, style: .continuous)
+                                    .stroke(Color.accentColor.opacity(0.8), lineWidth: 2)
+                            )
+                    } else {
+                        // Fallback
+                        Image(systemName: "cpu.fill")
+                            .font(.system(size: 80))
+                            .foregroundColor(.accentColor)
+                            .shadow(color: .accentColor, radius: 10 + glowOffset)
+                    }
                     
-                    Text("DN TWEAKS")
-                        .font(.system(size: 40, weight: .heavy, design: .rounded))
+                    Text("PRIME SENSILOCK")
+                        .font(.system(size: 32, weight: .heavy, design: .rounded))
                         .foregroundColor(.white)
                         .shadow(color: .white.opacity(0.5), radius: 5 + glowOffset)
                     
