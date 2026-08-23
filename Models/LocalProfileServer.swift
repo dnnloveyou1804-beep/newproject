@@ -1,6 +1,8 @@
 import Foundation
 import Network
 import UIKit
+import Combine
+import SwiftUI
 
 class LocalProfileServer: ObservableObject {
     private var listener: NWListener?
