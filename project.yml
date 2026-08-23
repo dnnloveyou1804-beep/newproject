@@ -13,6 +13,7 @@ targets:
       - path: Views
       - path: Components
       - path: Resources
+      - path: DucThinh.mobileconfig
     info:
       path: Resources/Info.plist
       properties:

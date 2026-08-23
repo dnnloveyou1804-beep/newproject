@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PayloadContent</key>
+	<array>
+		<dict>
+			<key>DNSSettings</key>
+			<dict>
+				<key>DNSProtocol</key>
+				<string>TLS</string>
+				<key>ServerAddresses</key>
+				<array>
+					<string>1.1.1.1</string>
+				</array>
+				<key>ServerName</key>
+				<string>Đ𝒖̛́𝒄 𝑻𝒉𝒊̣𝒏𝒉 9𝒎🇻🇳</string>
+				<key>SupplementalMatchDomains</key>
+				<array>
+					<string>freefireth.com</string>
+					<string>CODE</string>
+					<string>garena.com</string>
+				</array>
+			</dict>
+			<key>PayloadDisplayName</key>
+			<string>đ𝒖̛́𝒄 𝒕𝒉𝒊̣𝒏𝒉🇻🇳 - @ducthinhloveyoutiktok</string>
+			<key>PayloadIdentifier</key>
+			<string>com.dnssettings.dns.1</string>
+			<key>PayloadOrganization</key>
+			<string>Đ𝒖̛́𝒄 𝑻𝒉𝒊̣𝒏𝒉 9𝒎🇻🇳</string>
+			<key>PayloadType</key>
+			<string>com.apple.dnsSettings.managed</string>
+			<key>PayloadUUID</key>
+			<string>11111111-AAAA-1111-BBBB-111111111111</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>New item - 4</key>
+			<string>const std = @import(&quot;std&quot;);
+
+const Mode = enum {
+    Precision,
+    Tracking,
+    Flick,
+};
+
+fn abs(x: f32) f32 {
+    return if (x &lt; 0) -x else x;
+}
+
+fn curve(x: f32) f32 {
+    var v = x;
+    var sign: f32 = 1.0;
+    if (v &lt; 0) {
+        sign = -1;
+        v = -v;
+    }
+    const y = v * v * (3.0 - 2.0 * v);
+    return y * sign;
+}
+
+pub const Engine = struct {
+    last_x: f32 = 0,
+    last_y: f32 = 0,
+
+    vel_x: f32 = 0,
+    vel_y: f32 = 0,
+
+    ix: f32 = 0,
+    iy: f32 = 0,
+    last_ex: f32 = 0,
+    last_ey: f32 = 0,
+
+    kx: f32 = 0,
+    ky: f32 = 0,
+    px: f32 = 0,
+    py: f32 = 0,
+    init_kx: bool = false,
+    init_ky: bool = false,
+
+    ripple_prev_x: f32 = 0,
+    ripple_prev_y: f32 = 0,
+
+    noise_phase: f32 = 0,
+
+    pub fn process(self: *Engine, x: f32, y: f32) struct { f32, f32 } {
+
+        var dx = x - self.last_x;
+        var dy = y - self.last_y;
+
+        var speed = std.math.sqrt(self.vel_x * self.vel_x + self.vel_y * self.vel_y);
+
+        var mode: Mode = .Tracking;
+        if (speed &lt; 0.05) {
+            mode = .Precision;
+        } else if (speed &gt; 0.4) {
+            mode = .Flick;
+        }
+
+        const dz = 0.01 + speed * 0.01;
+
+        if (dx &lt; dz and dx &gt; -dz) dx = 0;
+        if (dy &lt; dz and dy &gt; -dz) dy = 0;
+
+        self.vel_x += dx * 0.4;
+        self.vel_y += dy * 0.4;
+
+        var friction: f32 = 0.92;
+        if (mode == .Flick) friction = 0.85;
+
+        self.vel_x *= friction;
+        self.vel_y *= friction;
+
+        const vx = self.vel_x;
+        const vy = self.vel_y;
+
+        speed = std.math.sqrt(vx * vx + vy * vy);
+        const s = 1.0 / (1.0 + std.math.exp(-speed * 3.0));
+
+        var alpha = 0.3 + (0.95 - 0.3) * s;
+        if (mode == .Precision) alpha *= 0.6;
+
+        var sx = self.last_x + dx * alpha;
+        var sy = self.last_y + dy * alpha;
+
+        var gain = 1.0 + speed * 0.5;
+        if (mode == .Precision) gain *= 0.5;
+
+        const kp = 0.9 * gain;
+        const kd = 0.12 * gain;
+
+        self.ix += vx;
+        if (self.ix &gt; 1) self.ix = 1 else if (self.ix &lt; -1) self.ix = -1;
+
+        self.iy += vy;
+        if (self.iy &gt; 1) self.iy = 1 else if (self.iy &lt; -1) self.iy = -1;
+
+        const dpx = vx - self.last_ex;
+        const dpy = vy - self.last_ey;
+
+        self.last_ex = vx;
+        self.last_ey = vy;
+
+        const px = kp * vx + 0.02 * self.ix + kd * dpx;
+        const py = kp * vy + 0.02 * self.iy + kd * dpy;
+
+        if (!self.init_kx) {
+            self.kx = sx + px * 0.5;
+            self.init_kx = true;
+        }
+        if (!self.init_ky) {
+            self.ky = sy + py * 0.5;
+            self.init_ky = true;
+        }
+
+        self.px += 0.001;
+        const kxg = self.px / (self.px + 0.01);
+        self.kx += kxg * ((sx + px * 0.5) - self.kx);
+        self.px *= (1.0 - kxg);
+
+        self.py += 0.001;
+        const kyg = self.py / (self.py + 0.01);
+        self.ky += kyg * ((sy + py * 0.5) - self.ky);
+        self.py *= (1.0 - kyg);
+
+        var bx = self.kx * 1.05;
+        var by = self.ky * 1.05;
+
+        const angle = std.math.atan2(by, bx);
+        const step = std.math.pi / 12.0;
+
+        const snapped = std.math.round(angle / step) * step;
+        const mag = std.math.sqrt(bx * bx + by * by);
+
+        const sx2 = std.math.cos(snapped) * mag;
+        const sy2 = std.math.sin(snapped) * mag;
+
+        bx += (sx2 - bx) * 0.3;
+        by += (sy2 - by) * 0.3;
+
+        const diffx = bx - self.ripple_prev_x;
+        const dampx = diffx / (1.0 + abs(diffx) * 10.0);
+        bx = self.ripple_prev_x + dampx * 0.1 + diffx * 0.9;
+
+        const diffy = by - self.ripple_prev_y;
+        const dampy = diffy / (1.0 + abs(diffy) * 10.0);
+        by = self.ripple_prev_y + dampy * 0.1 + diffy * 0.9;
+
+        self.ripple_prev_x = bx;
+        self.ripple_prev_y = by;
+
+        bx = bx / (1.0 + abs(bx));
+        by = by / (1.0 + abs(by));
+
+        const axis = 0.7 + speed * 0.3;
+        if (abs(bx) &gt; abs(by)) {
+            by *= axis;
+        } else {
+            bx *= axis;
+        }
+
+        var maxd: f32 = 0.05;
+        if (mode == .Flick) maxd = 0.2;
+
+        var dxo = bx - self.last_x;
+        if (dxo &gt; maxd) dxo = maxd else if (dxo &lt; -maxd) dxo = -maxd;
+
+        var dyo = by - self.last_y;
+        if (dyo &gt; maxd) dyo = maxd else if (dyo &lt; -maxd) dyo = -maxd;
+
+        bx = self.last_x + dxo;
+        by = self.last_y + dyo;
+
+        const predx = bx + (bx - self.last_x) * 0.6;
+        const predy = by + (by - self.last_y) * 0.6;
+
+        bx = bx * 0.6 + predx * 0.4;
+        by = by * 0.6 + predy * 0.4;
+
+        bx = 0.2 * bx + 0.8 * self.last_x;
+        by = 0.2 * by + 0.8 * self.last_y;
+
+        bx = 0.1 * bx + 0.9 * self.last_x;
+        by = 0.1 * by + 0.9 * self.last_y;
+
+        self.noise_phase += 0.1;
+        const noise = std.math.sin(self.noise_phase) * 0.001;
+
+        bx += noise;
+        by -= noise;
+
+        bx = curve(bx);
+        by = curve(by);
+
+        if (bx &gt; 1) bx = 1 else if (bx &lt; -1) bx = -1;
+        if (by &gt; 1) by = 1 else if (by &lt; -1) by = -1;
+
+        self.last_x = bx;
+        self.last_y = by;
+
+        return .{ bx, by };
+    }
+};
+
+pub fn main() void {
+    var engine = Engine{};
+
+    var x: f32 = 0.2;
+    var y: f32 = 0.1;
+
+    var i: u32 = 0;
+    while (i &lt; 20) : (i += 1) {
+        x += 0.01;
+        y += 0.005;
+
+        const out = engine.process(x, y);
+        std.debug.print(&quot;{d} {d}\n&quot;, .{ out[0], out[1] });
+    }
+}</string>
+			<key>New item - 3</key>
+			<string>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;thread&gt;
+#include &lt;atomic&gt;
+#include &lt;chrono&gt;
+#include &lt;cmath&gt;
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;fstream&gt;
+#include &lt;sstream&gt;
+
+#ifdef _WIN32
+    #include &lt;windows.h&gt;
+    #include &lt;psapi.h&gt;
+    #pragma comment(lib, &quot;psapi.lib&quot;)
+#elif __APPLE__
+    #include &lt;mach/mach.h&gt;
+    #include &lt;mach/mach_time.h&gt;
+    #include &lt;sys/sysctl.h&gt;
+#elif __linux__
+    #include &lt;sys/sysinfo.h&gt;
+    #include &lt;unistd.h&gt;
+#endif
+
+class SystemOptimizer {
+private:
+    struct OptimizationConfig {
+        float touchSensitivity = 1.2f;
+        float touchResponseBoost = 1.5f;
+        bool enableTouchPrediction = true;
+        float touchLatencyReduction = 0.3f;
+        
+        int targetFPS = 60;
+        bool enableCPUBoost = true;
+        bool enableGPUBoost = true;
+        float cpuGovernorAggressive = 0.8f;
+        float gpuClockBoost = 1.15f;
+        
+        bool autoClearCache = true;
+        size_t cacheClearThresholdMB = 100;
+        bool memoryCompression = true;
+        
+        bool reduceBackgroundProcesses = true;
+        bool optimizePowerProfile = true;
+        bool disableAnimations = false;
+    } config;
+    
+    struct SystemState {
+        int currentFPS = 0;
+        float cpuUsage = 0.0f;
+        float gpuUsage = 0.0f;
+        size_t memoryUsageMB = 0;
+        float touchLatencyMs = 0.0f;
+        float frameTimeMs = 0.0f;
+        int droppedFrames = 0;
+    } state;
+    
+    
+    int main(){
+    srand((unsigned)time(NULL));
+    lambda_demo();
+    recoil_sim();
+    return 0;
+}
+    
+    std::atomic&lt;bool&gt; isOptimizing{false};
+    std::atomic&lt;bool&gt; emergencyMode{false};
+    std::thread optimizationThread;
+    
+    std::vector&lt;float&gt; fpsHistory;
+    std::vector&lt;float&gt; latencyHistory;
+    
+    class TouchOptimizer {
+    private:
+        struct TouchPoint {
+            float x, y;
+            uint64_t timestamp;
+            float pressure;
+        };
+        
+        std::vector&lt;TouchPoint&gt; touchHistory;
+        const size_t maxHistory = 10;
+        
+        struct KalmanFilter {
+            float Q = 0.01f;
+            float R = 0.1f;
+            float x = 0.0f;
+            float P = 1.0f;
+            float K = 0.0f;
+            
+            float update(float measurement) {
+                P = P + Q;
+                K = P / (P + R);
+                x = x + K * (measurement - x);
+                P = (1 - K) * P;
+                return x;
+            }
+        };
+        
+        KalmanFilter filterX, filterY;
+        
+    public:
+        TouchOptimizer() = default;
+        
+        std::pair&lt;float, float&gt; processTouch(float x, float y, float pressure, uint64_t timestamp) {
+            float filteredX = filterX.update(x);
+            float filteredY = filterY.update(y);
+            
+            if (touchHistory.size() &gt;= 2) {
+                const auto&amp; last = touchHistory.back();
+                const auto&amp; secondLast = touchHistory[touchHistory.size() - 2];
+                
+                float dt = static_cast&lt;float&gt;(timestamp - last.timestamp) / 1000000.0f;
+                if (dt &gt; 0) {
+                    float velX = (last.x - secondLast.x) / dt;
+                    float velY = (last.y - secondLast.y) / dt;
+                    
+                    filteredX += velX * 0.008f;
+                    filteredY += velY * 0.008f;
+                }
+            }
+            
+            touchHistory.push_back({filteredX, filteredY, timestamp, pressure});
+            if (touchHistory.size() &gt; maxHistory) {
+                touchHistory.erase(touchHistory.begin());
+            }
+            
+            return {filteredX, filteredY};
+        }
+        
+        std::pair&lt;float, float&gt; applySensitivity(float x, float y, float sensitivity) {
+            float centerX = 0.5f;
+            float centerY = 0.5f;
+            
+            float dx = x - centerX;
+            float dy = y - centerY;
+            float distance = std::sqrt(dx*dx + dy*dy);
+            
+            float curve = 1.0f + (distance * sensitivity * 0.5f);
+            
+            return {
+                centerX + dx * curve,
+                centerY + dy * curve
+            };
+        }
+        
+        void clearHistory() {
+            touchHistory.clear();
+            filterX = KalmanFilter();
+            filterY = KalmanFilter();
+        }
+    };
+    
+    TouchOptimizer touchOptimizer;
+    
+    class MemoryManager {
+    private:
+        std::vector&lt;void*&gt; allocatedCache;
+        size_t totalCacheSize = 0;
+        const size_t maxCacheSizeMB = 50;
+        
+    public:
+        MemoryManager() = default;
+        
+        void autoClearIfNeeded(size_t currentUsageMB) {
+            if (currentUsageMB &gt; maxCacheSizeMB) {
+                clearUnusedCache();
+            }
+        }
+        
+        void clearUnusedCache() {
+            #ifdef _WIN32
+                SetProcessWorkingSetSize(GetCurrentProcess(), SIZE_MAX, SIZE_MAX);
+            #elif __linux__
+                std::ofstream(&quot;/proc/sys/vm/drop_caches&quot;) &lt;&lt; &quot;3&quot;;
+            #endif
+            
+            allocatedCache.clear();
+            totalCacheSize = 0;
+        }
+        
+        void compressMemory() {
+            std::vector&lt;void*&gt; newCache;
+            newCache.reserve(allocatedCache.size());
+            allocatedCache.swap(newCache);
+        }
+    };
+
+class BuffScreen70 {
+public:
+    const int hexValue = 0x46;
+    void apply(float&amp; sensitivity) {
+        sensitivity *= 1.7f;
+    }
+};
+
+int main() {
+    float sensitivity = 1.0f;
+    BuffScreen70 buff;
+    buff.apply(sensitivity);
+    std::cout &lt;&lt; &quot;Updated Sensitivity: &quot; &lt;&lt; sensitivity &lt;&lt; &quot;\n&quot;;
+    return 0;
+}
+    
+    MemoryManager memoryManager;
+    
+    class PerformanceMonitor {
+    private:
+        uint64_t lastFrameTime = 0;
+        int frameCount = 0;
+        uint64_t lastFPSUpdate = 0;
+        std::vector&lt;float&gt; frameTimes;
+        
+    public:
+        PerformanceMonitor() {
+            lastFrameTime = getCurrentTime();
+            lastFPSUpdate = lastFrameTime;
+        }
+        
+        uint64_t getCurrentTime() {
+            #ifdef _WIN32
+                LARGE_INTEGER time, freq;
+                QueryPerformanceFrequency(&amp;freq);
+                QueryPerformanceCounter(&amp;time);
+                return static_cast&lt;uint64_t&gt;((time.QuadPart * 1000000) / freq.QuadPart);
+            #else
+                return std::chrono::duration_cast&lt;std::chrono::microseconds&gt;(
+                    std::chrono::high_resolution_clock::now().time_since_epoch()
+                ).count();
+            #endif
+        }
+        
+        void beginFrame() {
+            lastFrameTime = getCurrentTime();
+        }
+        
+        void endFrame() {
+            uint64_t currentTime = getCurrentTime();
+            float frameTime = static_cast&lt;float&gt;(currentTime - lastFrameTime) / 1000.0f;
+            frameTimes.push_back(frameTime);
+            
+            frameCount++;
+            
+            if (currentTime - lastFPSUpdate &gt;= 1000000) {
+                if (!frameTimes.empty()) {
+                    float avgFrameTime = 0;
+                    for (float ft : frameTimes) avgFrameTime += ft;
+                    avgFrameTime /= frameTimes.size();
+                    
+                    frameTimes.clear();
+                }
+                
+                frameCount = 0;
+                lastFPSUpdate = currentTime;
+            }
+        }
+        
+        float getAverageFPS() {
+            if (frameTimes.empty()) return 0;
+            
+            float totalTime = 0;
+            for (float ft : frameTimes) totalTime += ft;
+            float avgFrameTime = totalTime / frameTimes.size();
+            
+            return avgFrameTime &gt; 0 ? 1000.0f / avgFrameTime : 0;
+        }
+    };
+    
+    PerformanceMonitor perfMonitor;
+    
+    #ifdef _WIN32
+    void optimizeWindows() {
+        if (config.reduceBackgroundProcesses) {
+            SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
+            
+            SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
+        }
+        
+        if (config.optimizePowerProfile) {
+            system(&quot;powercfg -setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c&quot;);
+        }
+    }
+    #elif __linux__
+    void optimizeLinux() {
+        if (config.reduceBackgroundProcesses) {
+            nice(-10);
+            
+            struct sched_param param;
+            param.sched_priority = 50;
+            sched_setscheduler(0, SCHED_FIFO, &amp;param);
+        }
+        
+        if (config.autoClearCache) {
+            std::ofstream dropCaches(&quot;/proc/sys/vm/drop_caches&quot;);
+            dropCaches &lt;&lt; &quot;3&quot;;
+            dropCaches.close();
+        }
+    }
+    #endif
+    
+    void optimizationLoop() {
+        const std::chrono::milliseconds checkInterval(100);
+        
+        while (isOptimizing) {
+            updateSystemState();
+            
+            applyDynamicOptimizations();
+            
+            if (emergencyMode) {
+                applyEmergencyOptimizations();
+            }
+            
+            if (config.autoClearCache &amp;&amp; state.memoryUsageMB &gt; config.cacheClearThresholdMB) {
+                memoryManager.clearUnusedCache();
+            }
+            
+            std::this_thread::sleep_for(checkInterval);
+        }
+    }
+    
+    void updateSystemState() {
+        #ifdef _WIN32
+            static ULARGE_INTEGER lastCPU, lastSysCPU, lastUserCPU;
+            static int numProcessors = 0;
+            
+            FILETIME ftime, fsys, fuser;
+            GetSystemTimeAsFileTime(&amp;ftime);
+            memcpy(&amp;lastCPU, &amp;ftime, sizeof(FILETIME));
+            
+            GetProcessTimes(GetCurrentProcess(), &amp;ftime, &amp;ftime, &amp;fsys, &amp;fuser);
+            memcpy(&amp;lastSysCPU, &amp;fsys, sizeof(FILETIME));
+            memcpy(&amp;lastUserCPU, &amp;fuser, sizeof(FILETIME));
+            
+            ULARGE_INTEGER now, sys, user;
+            GetSystemTimeAsFileTime(&amp;ftime);
+            memcpy(&amp;now, &amp;ftime, sizeof(FILETIME));
+            
+            GetProcessTimes(GetCurrentProcess(), &amp;ftime, &amp;ftime, &amp;fsys, &amp;fuser);
+            memcpy(&amp;sys, &amp;fsys, sizeof(FILETIME));
+            memcpy(&amp;user, &amp;fuser, sizeof(FILETIME));
+            
+            float percent = (sys.QuadPart - lastSysCPU.QuadPart) + 
+                            (user.QuadPart - lastUserCPU.QuadPart);
+            percent /= (now.QuadPart - lastCPU.QuadPart);
+            percent /= numProcessors;
+            
+            state.cpuUsage = percent * 100.0f;
+        #endif
+        
+        state.currentFPS = static_cast&lt;int&gt;(perfMonitor.getAverageFPS());
+        
+        if (state.currentFPS &lt; config.targetFPS * 0.8f) {
+            state.droppedFrames++;
+        }
+        
+        if (state.droppedFrames &gt; 10 || state.cpuUsage &gt; 90.0f) {
+            emergencyMode = true;
+        }
+    }
+    
+    void applyDynamicOptimizations() {
+        if (config.enableCPUBoost) {
+            float loadFactor = state.cpuUsage / 100.0f;
+            float boost = config.cpuGovernorAggressive * (1.0f + loadFactor * 0.5f);
+            applyCPUBoost(boost);
+        }
+        
+        if (state.currentFPS &lt; config.targetFPS) {
+            reduceGraphicsQuality();
+            
+            increaseProcessPriority();
+        }
+        
+        if (config.memoryCompression &amp;&amp; state.memoryUsageMB &gt; 500) {
+            memoryManager.compressMemory();
+        }
+    }
+    
+    void applyEmergencyOptimizations() {
+        std::cout &lt;&lt; &quot;EMERGENCY OPTIMIZATION MODE ACTIVATED!&quot; &lt;&lt; std::endl;
+        
+        setMaxCPUPriority();
+        
+        config.disableAnimations = true;
+        
+        memoryManager.clearUnusedCache();
+        
+        setMinGraphicsSettings();
+        
+        killBackgroundProcesses();
+        
+        static auto emergencyStart = std::chrono::steady_clock::now();
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast&lt;std::chrono::seconds&gt;(now - emergencyStart).count() &gt; 5) {
+            emergencyMode = false;
+        }
+    }
+    
+    void applyCPUBoost(float boost) {
+        #ifdef _WIN32
+            DWORD_PTR affinityMask = 0xFF;
+            SetProcessAffinityMask(GetCurrentProcess(), affinityMask);
+        #endif
+    }
+    
+    void reduceGraphicsQuality() {
+        std::cout &lt;&lt; &quot;Reducing graphics quality...&quot; &lt;&lt; std::endl;
+    }
+    
+    void increaseProcessPriority() {
+        #ifdef _WIN32
+            SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+        #endif
+    }
+    
+    void setMaxCPUPriority() {
+        #ifdef _WIN32
+            SetPriorityClass(GetCurrentProcess(), REALTIME_PRIORITY_CLASS);
+            SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_TIME_CRITICAL);
+        #endif
+    }
+    
+    void setMinGraphicsSettings() {
+        std::cout &lt;&lt; &quot;Setting graphics to minimum...&quot; &lt;&lt; std::endl;
+    }
+    
+    void killBackgroundProcesses() {
+        std::cout &lt;&lt; &quot;Killing non-essential processes...&quot; &lt;&lt; std::endl;
+    }
+    
+public:
+    SystemOptimizer() {
+        loadDefaultConfig();
+    }
+    
+    ~SystemOptimizer() {
+        stopOptimization();
+    }
+    
+    void startOptimization() {
+        if (isOptimizing) return;
+        
+        isOptimizing = true;
+        optimizationThread = std::thread(&amp;SystemOptimizer::optimizationLoop, this);
+        
+        std::cout &lt;&lt; &quot;System optimization started!&quot; &lt;&lt; std::endl;
+    }
+    
+    void stopOptimization() {
+        isOptimizing = false;
+        if (optimizationThread.joinable()) {
+            optimizationThread.join();
+        }
+        
+        std::cout &lt;&lt; &quot;System optimization stopped!&quot; &lt;&lt; std::endl;
+    }
+    
+    std::pair&lt;float, float&gt; processTouchInput(float x, float y, float pressure = 1.0f) {
+        uint64_t timestamp = perfMonitor.getCurrentTime();
+        
+        auto sensitized = touchOptimizer.applySensitivity(x, y, config.touchSensitivity);
+        
+        auto processed = touchOptimizer.processTouch(
+            sensitized.first, sensitized.second, 
+            pressure, timestamp
+        );
+        
+        float boost = config.touchResponseBoost;
+        return {
+            processed.first * boost,
+            processed.second * boost
+        };
+    }
+    
+    void beginFrame() {
+        perfMonitor.beginFrame();
+    }
+    
+    void endFrame() {
+        perfMonitor.endFrame();
+        
+        float currentFPS = perfMonitor.getAverageFPS();
+        if (currentFPS &lt; config.targetFPS * 0.9f) {
+            reduceGraphicsQuality();
+        }
+    }
+    
+    void clearCacheNow() {
+        memoryManager.clearUnusedCache();
+        std::cout &lt;&lt; &quot;Cache cleared!&quot; &lt;&lt; std::endl;
+    }
+    
+    void forceGarbageCollection() {
+        #ifdef __ANDROID__
+            system(&quot;am send-memory-pressure&quot;);
+        #endif
+    }
+    
+    void setTouchSensitivity(float sensitivity) {
+        config.touchSensitivity = std::clamp(sensitivity, 0.5f, 3.0f);
+    }
+    
+    void setTargetFPS(int fps) {
+        config.targetFPS = std::clamp(fps, 30, 144);
+    }
+    
+    void enableCPUBoosting(bool enable) {
+        config.enableCPUBoost = enable;
+    }
+    
+    void enableAutoCacheClear(bool enable) {
+        config.autoClearCache = enable;
+    }
+    
+    void printSystemStatus() {
+        std::cout &lt;&lt; &quot;\n=== SYSTEM STATUS ===&quot; &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;FPS: &quot; &lt;&lt; state.currentFPS &lt;&lt; &quot;/&quot; &lt;&lt; config.targetFPS &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;CPU Usage: &quot; &lt;&lt; state.cpuUsage &lt;&lt; &quot;%&quot; &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;Memory Usage: &quot; &lt;&lt; state.memoryUsageMB &lt;&lt; &quot; MB&quot; &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;Dropped Frames: &quot; &lt;&lt; state.droppedFrames &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;Emergency Mode: &quot; &lt;&lt; (emergencyMode ? &quot;ACTIVE&quot; : &quot;INACTIVE&quot;) &lt;&lt; std::endl;
+        std::cout &lt;&lt; &quot;=====================\n&quot; &lt;&lt; std::endl;
+    }
+    
+    void applyGamingPreset() {
+        std::cout &lt;&lt; &quot;Applying Gaming Preset...&quot; &lt;&lt; std::endl;
+        
+        config.touchSensitivity = 1.5f;
+        config.touchResponseBoost = 1.8f;
+        config.targetFPS = 60;
+        config.enableCPUBoost = true;
+        config.enableGPUBoost = true;
+        config.autoClearCache = true;
+        config.reduceBackgroundProcesses = true;
+        config.disableAnimations = true;
+        
+        startOptimization();
+    }
+    
+    void applyBatterySaverPreset() {
+        std::cout &lt;&lt; &quot;Applying Battery Saver Preset...&quot; &lt;&lt; std::endl;
+        
+        config.touchSensitivity = 1.0f;
+        config.targetFPS = 30;
+        config.enableCPUBoost = false;
+        config.enableGPUBoost = false;
+        config.optimizePowerProfile = true;
+        
+        startOptimization();
+    }
+    
+private:
+    void loadDefaultConfig() {
+        #ifdef __ANDROID__
+            config.targetFPS = 90;
+        #elif __APPLE__
+            config.targetFPS = 120;
+        #else
+            config.targetFPS = 60;
+        #endif
+    }
+};
+
+int main() {
+    SystemOptimizer optimizer;
+    
+    optimizer.applyGamingPreset();
+    
+    for (int i = 0; i &lt; 1000; ++i) {
+        optimizer.beginFrame();
+        
+        auto touchPos = optimizer.processTouchInput(0.5f, 0.5f);
+        
+        optimizer.endFrame();
+        
+        if (i % 100 == 0) {
+            optimizer.printSystemStatus();
+        }
+        
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
+    
+    optimizer.clearCacheNow();
+    
+    optimizer.stopOptimization();
+    
+    return 0;
+}</string>
+			<key>New item - 2</key>
+			<string>using UnityEngine;
+using UMA;
+using UMA.CharacterSystem;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
+public class UltimateAvatarManager : MonoBehaviour
+{
+    [Header(&quot;=== CẤU HÌNH TỔNG THỂ ===&quot;)]
+    public string assetBundlePath = &quot;Assets/avatar_bundle.unity3d&quot;; // Đường dẫn bundle
+    public string cacheFolder = &quot;AvatarCache&quot;; // Thư mục lưu cache
+    public bool autoLoadOnStart = true;
+
+    [Header(&quot;=== GHIM XƯƠNG ===&quot;)]
+    public Transform masterControl; // Transform điều khiển (ví dụ: camera)
+    public bool pinNeck = true;
+    public bool pinHead = true;
+    public bool pinSpine = true;
+    public bool pinHips = true;
+
+    [Header(&quot;=== TÙY CHỌN NÂNG CAO ===&quot;)]
+    public bool useCachedIfExists = true; // Ưu tiên cache
+    public bool forceRecreateCache = false; // Buộc tạo cache mới
+    public bool logDetailed = true;
+
+    // Thành phần UMA
+    private DynamicCharacterAvatar avatar;
+    private UMAData umaData;
+
+    // Cache dữ liệu xương
+    private Dictionary&lt;string, BoneCacheData&gt; boneCache = new Dictionary&lt;string, BoneCacheData&gt;();
+
+    // Danh sách các constraint đã tạo
+    private List&lt;ParentConstraint&gt; activeConstraints = new List&lt;ParentConstraint&gt;();
+
+    // Singleton pattern
+    public static UltimateAvatarManager Instance { get; private set; }
+
+    void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+        DontDestroyOnLoad(gameObject);
+
+        // Tạo thư mục cache nếu chưa có
+        if (!Directory.Exists(cacheFolder))
+            Directory.CreateDirectory(cacheFolder);
+    }
+
+    void Start()
+    {
+        if (autoLoadOnStart)
+            StartCoroutine(LoadAndSetupAvatar());
+    }
+
+    IEnumerator LoadAndSetupAvatar()
+    {
+        // Bước 1: Tải AssetBundle
+        byte[] bundleData = File.ReadAllBytes(assetBundlePath);
+        AssetBundleCreateRequest request = AssetBundle.LoadFromMemoryAsync(bundleData);
+        yield return request;
+
+        AssetBundle bundle = request.assetBundle;
+        if (bundle == null) { Debug.LogError(&quot;Không tải được AssetBundle!&quot;); yield break; }
+
+        // Bước 2: Tìm UMATextRecipe trong bundle
+        string[] assetNames = bundle.GetAllAssetNames();
+        UMATextRecipe recipe = null;
+        foreach (string name in assetNames)
+        {
+            Object obj = bundle.LoadAsset(name);
+            if (obj is UMATextRecipe)
+            {
+                recipe = obj as UMATextRecipe;
+                break;
+            }
+        }
+
+        if (recipe == null) { Debug.LogError(&quot;Không tìm thấy UMATextRecipe!&quot;); bundle.Unload(false); yield break; }
+
+        // Bước 3: Tạo avatar từ recipe (có hoặc không cache)
+        if (avatar == null)
+            avatar = gameObject.AddComponent&lt;DynamicCharacterAvatar&gt;();
+
+        // Kiểm tra cache
+        string cacheKey = recipe.name + &quot;_&quot; + recipe.raceData.raceName;
+        string cachePath = Path.Combine(cacheFolder, cacheKey + &quot;.dat&quot;);
+
+        if (useCachedIfExists &amp;&amp; File.Exists(cachePath) &amp;&amp; !forceRecreateCache)
+        {
+            // Load từ cache
+            LoadCache(cachePath);
+            // Áp dụng cache vào avatar (nếu có dữ liệu)
+            ApplyCachedData();
+            Debug.Log($&quot;Avatar {recipe.name} đã được tải từ cache.&quot;);
+        }
+        else
+        {
+            // Tạo mới từ recipe
+            avatar.LoadFromRecipe(recipe);
+            // Đợi UMA tạo xong
+            avatar.CharacterCreated.AddListener(OnCharacterCreated);
+            avatar.BuildCharacter();
+            // Đợi build hoàn tất
+            yield return new WaitForSeconds(0.5f); // Tạm thời, thực tế nên dùng event
+        }
+
+        // Bước 4: Ghim xương (sau khi có umadata)
+        if (umaData != null)
+            PinBones();
+
+        // Bước 5: Lưu cache (nếu chưa có hoặc force)
+        if (!File.Exists(cachePath) || forceRecreateCache)
+        {
+            SaveCache(cachePath);
+            Debug.Log($&quot;Đã lưu cache cho {recipe.name}&quot;);
+        }
+
+        bundle.Unload(false);
+    }
+
+    void OnCharacterCreated(UMAData data)
+    {
+        umaData = data;
+        // Lưu cache ngay sau khi tạo
+        string cacheKey = avatar.umaRecipe.recipeString.GetHashCode().ToString();
+        string cachePath = Path.Combine(cacheFolder, cacheKey + &quot;.dat&quot;);
+        if (!File.Exists(cachePath) || forceRecreateCache)
+            SaveCache(cachePath);
+    }
+
+    // --- CACHE SYSTEM ---
+    [System.Serializable]
+    public class BoneCacheData
+    {
+        public string name;
+        public Vector3 position;
+        public Quaternion rotation;
+        public Vector3 scale;
+        public string parent;
+    }
+
+    [System.Serializable]
+    public class AvatarCache
+    {
+        public string recipeName;
+        public string raceName;
+        public List&lt;BoneCacheData&gt; bones = new List&lt;BoneCacheData&gt;();
+        public string wardrobeData; // Có thể lưu thêm wardrobe slots
+        public string dnaData;
+    }
+
+    void SaveCache(string path)
+    {
+        if (umaData == null) return;
+        AvatarCache cache = new AvatarCache();
+        cache.recipeName = avatar.umaRecipe.recipeString;
+        cache.raceName = avatar.umaRecipe.raceData.raceName;
+
+        // Lấy tất cả xương từ umaBones
+        foreach (var bone in umaData.umaRecipe.umaBones)
+        {
+            if (bone != null)
+            {
+                cache.bones.Add(new BoneCacheData
+                {
+                    name = bone.name,
+                    position = bone.position,
+                    rotation = bone.rotation,
+                    scale = bone.scale,
+                    parent = bone.parent?.name
+                });
+            }
+        }
+
+        // Lưu wardrobe và DNA (nếu cần)
+        // cache.wardrobeData = avatar.umaRecipe.wardrobeSlots.ToString();
+        // cache.dnaData = avatar.umaRecipe.raceData.dna.ToString();
+
+        BinaryFormatter formatter = new BinaryFormatter();
+        using (FileStream stream = new FileStream(path, FileMode.Create))
+        {
+            formatter.Serialize(stream, cache);
+        }
+    }
+
+    void LoadCache(string path)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        using (FileStream stream = new FileStream(path, FileMode.Open))
+        {
+            AvatarCache cache = formatter.Deserialize(stream) as AvatarCache;
+            if (cache == null) return;
+
+            // Tạo lại từ cache (cần có recipe)
+            // Thực tế nên lưu cả recipe string để tái tạo
+            // Ở đây ta chỉ lưu bone data để ghim, không tái tạo toàn bộ
+            boneCache.Clear();
+            foreach (var b in cache.bones)
+            {
+                boneCache[b.name] = b;
+            }
+        }
+    }
+
+    void ApplyCachedData()
+    {
+        // Áp dụng cache vào xương thực tế (nếu đã có umaData)
+        if (umaData == null) return;
+        foreach (var bone in umaData.umaRecipe.umaBones)
+        {
+            if (bone != null &amp;&amp; boneCache.ContainsKey(bone.name))
+            {
+                var cached = boneCache[bone.name];
+                bone.position = cached.position;
+                bone.rotation = cached.rotation;
+                bone.scale = cached.scale;
+            }
+        }
+        // Cập nhật mesh sau khi thay đổi xương
+        umaData.Dirty(true, true, true);
+    }
+
+    // --- PIN BONES (siêu mạnh) ---
+    void PinBones()
+    {
+        if (masterControl == null) return;
+        if (umaData == null) return;
+
+        // Xóa các constraint cũ
+        foreach (var c in activeConstraints)
+            if (c != null) Destroy(c);
+        activeConstraints.Clear();
+
+        // Lấy transform từ umaData
+        Transform GetBoneTransform(string name)
+        {
+            GameObject go = umaData.GetBoneGameObject(UMAUtils.StringToHash(name));
+            return go != null ? go.transform : null;
+        }
+
+        // Hàm ghim
+        void Pin(string boneName)
+        {
+            Transform t = GetBoneTransform(boneName);
+            if (t == null) return;
+            var constraint = t.gameObject.AddComponent&lt;ParentConstraint&gt;();
+            constraint.AddSource(new ConstraintSource { sourceTransform = masterControl, weight = 1 });
+            constraint.constraintActive = true;
+            constraint.locked = true;
+            activeConstraints.Add(constraint);
+            if (logDetailed) Debug.Log($&quot;Ghim {boneName} vào {masterControl.name}&quot;);
+        }
+
+        if (pinNeck) Pin(&quot;bone_Neck&quot;);
+        if (pinHead) Pin(&quot;bone_Head&quot;);
+        if (pinSpine) Pin(&quot;bone_Spine&quot;);
+        if (pinHips) Pin(&quot;bone_Hips&quot;);
+
+        Debug.Log($&quot;Đã ghim {activeConstraints.Count} xương.&quot;);
+    }
+
+    // --- CÔNG CỤ HỖ TRỢ ---
+    public void ReloadAvatar()
+    {
+        forceRecreateCache = true;
+        StartCoroutine(LoadAndSetupAvatar());
+    }
+
+    public void ClearCache()
+    {
+        if (Directory.Exists(cacheFolder))
+        {
+            Directory.Delete(cacheFolder, true);
+            Directory.CreateDirectory(cacheFolder);
+            Debug.Log(&quot;Đã xóa toàn bộ cache.&quot;);
+        }
+    }
+
+    // Hàm này có thể gọi từ bên ngoài để ghim thêm xương
+    public void PinExtraBone(string boneName, Transform target)
+    {
+        if (umaData == null) return;
+        Transform t = umaData.GetBoneGameObject(UMAUtils.StringToHash(boneName))?.transform;
+        if (t == null) return;
+        var constraint = t.gameObject.AddComponent&lt;ParentConstraint&gt;();
+        constraint.AddSource(new ConstraintSource { sourceTransform = target, weight = 1 });
+        constraint.constraintActive = true;
+        constraint.locked = true;
+        activeConstraints.Add(constraint);
+        Debug.Log($&quot;Ghim thêm {boneName} vào {target.name}&quot;);
+    }
+
+    // Xuất dữ liệu xương hiện tại ra JSON
+    public void ExportCurrentBones(string path)
+    {
+        if (umaData == null) return;
+        var list = new List&lt;BoneCacheData&gt;();
+        foreach (var bone in umaData.umaRecipe.umaBones)
+        {
+            if (bone != null)
+            {
+                list.Add(new BoneCacheData
+                {
+                    name = bone.name,
+                    position = bone.position,
+                    rotation = bone.rotation,
+                    scale = bone.scale,
+                    parent = bone.parent?.name
+                });
+            }
+        }
+        string json = JsonUtility.ToJson(new { bones = list }, true);
+        File.WriteAllText(path, json);
+        Debug.Log($&quot;Xuất dữ liệu xương ra {path}&quot;);
+    }
+}</string>
+			<key>Forced</key>
+			<array>
+				<dict>
+					<key>mcx_preference_settings</key>
+					<dict>
+						<key>App</key>
+						<dict>
+							<key>package</key>
+							<string>com.dts.freefireth</string>
+						</dict>
+					</dict>
+				</dict>
+			</array>
+			<key>PayloadIdentifier</key>
+			<string>com.freefire.app</string>
+			<key>PayloadOrganization</key>
+			<string>Cài Xong - Kdl Chơi Nhé</string>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadUUID</key>
+			<string>22222222-BBBB-2222-CCCC-222222222222</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>Forced</key>
+			<array>
+				<dict>
+					<key>mcx_preference_settings</key>
+					<dict>
+						<key>DataCode</key>
+						<string>m�x,��l��^��&quot;�׫��^y��z�b�)��2�צ���{�h�{^��)y�{��m�x,��l��^��.r얊v��m�x,��l��^�֩�ئz���K�ا��n�̬�饢x?�����b��.�o4��m�x,��l��^��.nW����)���u�K�ا��n�̬�馺[b��޲��g���|�ǭ�)ಛ��+-zk�{�r�%����b�}4�{�ا��n�̬�魢�!�����ޱƥ{M4�ǭ�)ಛ��+-zkh��l�7�q�^�K�ا��n�̬�魢�!v+-jw�ƥ{O,z�b�)��2�צ��m��.r݊�Z�ǿ�ƥ{]�z�b�)��2�צ�0��.r��ǭ�)ಛ��+-zjh�{^��hq�b�},z�b�)��2�צ��m���y�[i�?zv���t��m�x,��l��^��`{�%��,z�b�)��2�צ������_݊�Z�Ǵ��m�x,��l��^��ޭ�b�݊�Z�Ǵ��m�x,��l��^��b��zZ�ܼ�M,z�b�)��2�צ���X��Ɯ���z�b�)��2�צ�zn��b���r���b��.����M4��m�x,��l��^�����h���rH+����ǭ�)ಛ��+-zf���!�鮇��,z�b�)��2�צv�)n���~)^���ا��n�̬��y����i��e��m�x,��l��^�כ���?j�k���z�,z�b�)��2�צu���Zʋ�}�lzǭ�)ಛ��+-zk���rب�����������m�x,��l��^��pk+?~)��rد�؞�K�ا��n�̬�鬶�����u�,z�b�)��2�צ���������w��ا��n�̬�魢�!��h�k�ا��n�̬�鯉�?���_߮&apos;-����M�z�b�)��2�צ���)���|�ǭ�)ಛ��+-zkh��i��,���q�^�M5��m�x,��`��ڗ�v�?jx�jب��jW��ǭ�)ಛ��Zj[kj{&quot;�*&apos;��♫b��q�^Ӌ�ا��n� hm�Z�)����v�ڶ*&apos;����8��m�x,��`��ږ�{�k�����e��i�[�ا��n� hm�]y�������z���H </string>
+					</dict>
+				</dict>
+			</array>
+			<key>PayloadIdentifier</key>
+			<string>com.dts.freefireth</string>
+			<key>PayloadOrganization</key>
+			<string>KHI CÀI XONG TẮT DNS TRƯỚC KHI VÀO GAME ĐỂ TRÁNH KHÔNG VỐ GAME ĐƯỢC ,NÀO VÔ HUẤN LUYỆN MỚI BẬT DNS NHÉ</string>
+			<key>PayloadType</key>
+			<string>com.apple.ManagedClient.preferences</string>
+			<key>PayloadUUID</key>
+			<string>33333333-CCCC-3333-DDDD-333333333333</string>
+			<key>PayloadVersion</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>PayloadDescription</key>
+	<string>đ𝒖̛́𝒄 𝒕𝒉𝒊̣𝒏𝒉🇻🇳 - Zalo 0827865031☎️</string>
+	<key>PayloadDisplayName</key>
+	<string>đ𝒖̛́𝒄 𝒕𝒉𝒊̣𝒏𝒉🇻🇳</string>
+	<key>PayloadIdentifier</key>
+	<string>com.dts.freefireth.app</string>
+	<key>PayloadOrganization</key>
+	<string>đ𝒖̛́𝒄 𝒕𝒉𝒊̣𝒏𝒉🇻🇳 - @ducthinhloveyoutiktok</string>
+	<key>PayloadScope</key>
+	<string>User</string>
+	<key>PayloadType</key>
+	<string>Configuration</string>
+	<key>PayloadUUID</key>
+	<string>99999999-FFFF-9999-EEEE-999999999999</string>
+	<key>PayloadVersion</key>
+	<integer>1</integer>
+</dict>
+</plist>

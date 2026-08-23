@@ -10,18 +10,25 @@ struct DNTweaksApp: App {
     @StateObject private var licenseManager = LicenseManager()
     
     @AppStorage("AppAppearance") private var appearance: String = "system"
+    @State private var showSplash = true
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(themeManager)
-                .environmentObject(langManager)
-                .environmentObject(sysStats)
-                .environmentObject(securityManager)
-                .environmentObject(profileManager)
-                .environmentObject(licenseManager)
-                .tint(themeManager.currentTheme.color)
-                .preferredColorScheme(appearance == "dark" ? .dark : (appearance == "light" ? .light : nil))
+            Group {
+                if showSplash {
+                    SplashView(showSplash: $showSplash)
+                } else {
+                    ContentView()
+                }
+            }
+            .environmentObject(themeManager)
+            .environmentObject(langManager)
+            .environmentObject(sysStats)
+            .environmentObject(securityManager)
+            .environmentObject(profileManager)
+            .environmentObject(licenseManager)
+            .tint(themeManager.currentTheme.color)
+            .preferredColorScheme(appearance == "dark" ? .dark : (appearance == "light" ? .light : nil))
         }
     }
 }

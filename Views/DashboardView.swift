@@ -28,6 +28,9 @@ struct DashboardView: View {
                     VStack(spacing: 16) {
                         HeaderView()
                         
+                        // Mobileconfig Profile
+                        MobileconfigCardView()
+                        
                         // Active Profile Selector
                         VStack(alignment: .leading, spacing: 8) {
                             LocalizedText(key: "active_profile")

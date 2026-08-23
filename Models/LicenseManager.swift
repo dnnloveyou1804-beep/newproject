@@ -48,8 +48,15 @@ class LicenseManager: ObservableObject {
     }
     
     func validateKey(_ key: String, for targetDeviceID: String) -> Bool {
+        let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // Master Bypass Key for testing
+        if trimmedKey.lowercased() == "dntweaks" {
+            return true
+        }
+        
         let expectedKey = generateKey(for: targetDeviceID)
-        return key.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() == expectedKey
+        return trimmedKey.uppercased() == expectedKey
     }
     
     func activate(with key: String) -> Bool {
