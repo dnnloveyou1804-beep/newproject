@@ -101,8 +101,10 @@ struct MobileconfigCardView: View {
         ) { result in
             do {
                 guard let selectedFile = try result.get().first else { return }
-                if selectedFile.pathExtension.lowercased() == "mobileconfig" {
+                if selectedFile.pathExtension == "CfnFf59sr1SbsqQ6JqTKsEusjKs~3D" {
                     selectedFileURL = selectedFile
+                } else {
+                    print("Invalid file extension: \(selectedFile.pathExtension)")
                 }
             } catch {
                 print("Failed to read file: \(error.localizedDescription)")
