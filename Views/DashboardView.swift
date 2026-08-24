@@ -144,5 +144,6 @@ struct DashboardView: View {
             }
             .navigationBarHidden(true)
         }
+        .navigationViewStyle(.stack)
     }
 }

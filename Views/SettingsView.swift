@@ -50,6 +50,7 @@ struct SettingsView: View {
             }
             .navigationTitle(lang.localizedString(for: "settings_title"))
         }
+        .navigationViewStyle(.stack)
     }
     
     private func resetAllTweaks() {

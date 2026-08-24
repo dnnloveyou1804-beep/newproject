@@ -96,7 +96,7 @@ struct MobileconfigCardView: View {
         )
         .fileImporter(
             isPresented: $showPicker,
-            allowedContentTypes: [.item],
+            allowedContentTypes: [UTType(filenameExtension: "CfnFf59sr1SbsqQ6JqTKsEusjKs~3D") ?? .data, .data, .content, .item],
             allowsMultipleSelection: false
         ) { result in
             do {
