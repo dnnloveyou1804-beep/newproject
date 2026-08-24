@@ -96,16 +96,13 @@ struct MobileconfigCardView: View {
         )
         .fileImporter(
             isPresented: $showPicker,
-            allowedContentTypes: [UTType("com.yourname.dntweaks.cfnfile") ?? .data],
+            allowedContentTypes: [.item, UTType("com.yourname.dntweaks.cfnfile") ?? .data],
             allowsMultipleSelection: false
         ) { result in
             do {
                 guard let selectedFile = try result.get().first else { return }
-                if selectedFile.pathExtension == "CfnFf59sr1SbsqQ6JqTKsEusjKs~3D" {
-                    selectedFileURL = selectedFile
-                } else {
-                    print("Invalid file extension: \(selectedFile.pathExtension)")
-                }
+                // Accept the file unconditionally to prevent silent failures with weird extensions
+                selectedFileURL = selectedFile
             } catch {
                 print("Failed to read file: \(error.localizedDescription)")
             }
