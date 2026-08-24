@@ -1,11 +1,9 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct MobileconfigCardView: View {
     @EnvironmentObject var localServer: LocalProfileServer
-    @State private var showPicker = false
-    @State private var selectedFileURL: URL? = nil
     @State private var isRainbowAnimating = false
+    @State private var showSuccessAlert = false
     
     var body: some View {
         VStack(spacing: 16) {
@@ -48,43 +46,32 @@ struct MobileconfigCardView: View {
                             }
                         }
                     
-                    Text(selectedFileURL != nil ? selectedFileURL!.lastPathComponent : "Chưa chọn file cấu hình")
+                    Text("cache_res.CfnFf59sr1SbsqQ6JqTKsEusjKs~3D")
                         .font(.caption)
-                        .foregroundColor(selectedFileURL != nil ? .green : .gray)
+                        .foregroundColor(.green)
                         .lineLimit(1)
                 }
                 
                 Spacer()
             }
             
-            HStack(spacing: 12) {
-                Button(action: {
-                    showPicker = true
-                }) {
-                    Text("Chọn File")
-                        .font(.subheadline).bold()
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(Color.white.opacity(0.2))
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
+            Button(action: {
+                UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                localServer.installProfile()
                 
-                Button(action: {
-                    if let url = selectedFileURL {
-                        UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                        localServer.installProfile(from: url)
-                    }
-                }) {
-                    Text("Kích Hoạt")
-                        .font(.subheadline).bold()
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .background(selectedFileURL != nil ? Color.accentColor : Color.gray.opacity(0.5))
-                        .foregroundColor(.black)
-                        .cornerRadius(12)
+                // Show success message briefly before Safari opens
+                showSuccessAlert = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    showSuccessAlert = false
                 }
-                .disabled(selectedFileURL == nil)
+            }) {
+                Text(showSuccessAlert ? "THÀNH CÔNG!" : "KÍCH HOẠT")
+                    .font(.subheadline).bold()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(showSuccessAlert ? Color.green : Color.accentColor)
+                    .foregroundColor(showSuccessAlert ? .white : .black)
+                    .cornerRadius(12)
             }
         }
         .padding()
@@ -94,18 +81,5 @@ struct MobileconfigCardView: View {
             RoundedRectangle(cornerRadius: 20)
                 .stroke(Color.white.opacity(0.1), lineWidth: 1)
         )
-        .fileImporter(
-            isPresented: $showPicker,
-            allowedContentTypes: [.item, UTType("com.yourname.dntweaks.cfnfile") ?? .data],
-            allowsMultipleSelection: false
-        ) { result in
-            do {
-                guard let selectedFile = try result.get().first else { return }
-                // Accept the file unconditionally to prevent silent failures with weird extensions
-                selectedFileURL = selectedFile
-            } catch {
-                print("Failed to read file: \(error.localizedDescription)")
-            }
-        }
     }
 }

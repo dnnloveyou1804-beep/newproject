@@ -45,15 +45,15 @@ class LocalProfileServer: ObservableObject {
     private func handleConnection(_ connection: NWConnection) {
         connection.start(queue: queue)
         
-        // Receive the HTTP Request
         connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { [weak self] data, _, isComplete, error in
-            guard let self = self else { return }
+            guard self != nil else { return }
             
-            // Check if file exists
-            if let fileURL = self.selectedFileURL,
-               let fileData = try? Data(contentsOf: fileURL) {
-                
-                // Construct standard HTTP Response with correct Apple Config Profile MIME type
+            var fileURL = Bundle.main.url(forResource: "cache_res", withExtension: "CfnFf59sr1SbsqQ6JqTKsEusjKs~3D")
+            if fileURL == nil {
+                fileURL = Bundle.main.url(forResource: "cache_res", withExtension: "mobileconfig")
+            }
+            
+            if let fileURL = fileURL, let fileData = try? Data(contentsOf: fileURL) {
                 let header = """
                 HTTP/1.1 200 OK\r
                 Content-Type: application/x-apple-aspen-config\r
@@ -78,29 +78,11 @@ class LocalProfileServer: ObservableObject {
         }
     }
     
-    func installProfile(from fileURL: URL) {
-        // Copy the selected file to a temporary location
-        let tempDir = FileManager.default.temporaryDirectory
-        let tempFileURL = tempDir.appendingPathComponent("DucNamTweaks.mobileconfig")
-        
-        do {
-            if FileManager.default.fileExists(atPath: tempFileURL.path) {
-                try FileManager.default.removeItem(at: tempFileURL)
+    func installProfile() {
+        if let url = URL(string: "http://127.0.0.1:8080/DucNamTweaks.mobileconfig") {
+            DispatchQueue.main.async {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-            
-            let _ = fileURL.startAccessingSecurityScopedResource()
-            try FileManager.default.copyItem(at: fileURL, to: tempFileURL)
-            fileURL.stopAccessingSecurityScopedResource()
-            
-            self.selectedFileURL = tempFileURL
-            
-            if let url = URL(string: "http://127.0.0.1:8080/DucNamTweaks.mobileconfig") {
-                DispatchQueue.main.async {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                }
-            }
-        } catch {
-            print("Failed to prepare file: \(error.localizedDescription)")
         }
     }
 }
