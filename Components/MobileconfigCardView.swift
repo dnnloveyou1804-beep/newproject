@@ -57,9 +57,8 @@ struct MobileconfigCardView: View {
             
             Button(action: {
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-                localServer.installProfile()
                 
-                // Show success message briefly before Safari opens
+                // Just show success message without opening Safari
                 showSuccessAlert = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     showSuccessAlert = false
