@@ -96,7 +96,7 @@ struct MobileconfigCardView: View {
         )
         .fileImporter(
             isPresented: $showPicker,
-            allowedContentTypes: [UTType(filenameExtension: "CfnFf59sr1SbsqQ6JqTKsEusjKs~3D") ?? .data, .data, .content, .item],
+            allowedContentTypes: [UTType("com.yourname.dntweaks.cfnfile") ?? .data],
             allowsMultipleSelection: false
         ) { result in
             do {

@@ -19,5 +19,26 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>com.yourname.dntweaks.cfnfile</string>
+			<key>UTTypeDescription</key>
+			<string>DNTweaks Configuration File</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+				<string>public.item</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>CfnFf59sr1SbsqQ6JqTKsEusjKs~3D</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
